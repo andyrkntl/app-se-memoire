@@ -46,7 +46,7 @@ Route::get('/calendar/filter', [CalendarController::class, 'filter'])->name('cal
 Route::post('/calendar/store', [CalendarController::class, 'store'])->name('calendar.store');
 Route::get('/jalon/{id}/edit', [jalonController::class, 'edit'])->name('jalon.edit');
 Route::put('/jalon/{id}', [jalonController::class, 'update'])->name('jalon.update');
-Route::put('/jalon/{id}', [jalonController::class, 'destroy'])->name('jalon.destroy');
+Route::delete('/jalon/{id}', [jalonController::class, 'destroy'])->name('jalon.destroy');
 Route::delete('partiePrenante/{id}', [PartiePrenanteController::class, 'destroy'])->name('partiePrenante.destroy');
 Route::get('partiePrenante', [PartiePrenanteController::class, 'index'])->name('partiePrenante.index');
 Route::get('/activites', [ActiviteController::class, 'index'])->name('activite.index');

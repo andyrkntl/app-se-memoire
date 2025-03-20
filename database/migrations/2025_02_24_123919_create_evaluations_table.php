@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('evaluations', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('activite_id');
-            $table->foreign('activite_id')->references('id')->on('activites')->onDelete('cascade');
+            $table->unsignedBigInteger('activite_id')->index('evaluations_activite_id_foreign');
             $table->integer('Avancement');
             $table->string('Pro1');
             $table->string('Pro2');

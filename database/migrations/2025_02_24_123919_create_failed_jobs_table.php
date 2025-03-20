@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('partie_prenantes', function (Blueprint $table) {
+        Schema::create('failed_jobs', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('Nom_partie');
-            $table->string('accronime_partie');
-            $table->string('Responsable');
-            $table->string('Direction');
-            $table->timestamps();
+            $table->string('uuid', 191)->unique();
+            $table->text('connection');
+            $table->text('queue');
+            $table->longText('payload');
+            $table->longText('exception');
+            $table->timestamp('failed_at')->useCurrent();
         });
     }
 
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('_partie_prenantes');
+        Schema::dropIfExists('failed_jobs');
     }
 };

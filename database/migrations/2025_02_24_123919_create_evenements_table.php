@@ -9,10 +9,10 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('evenements', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrements('id');
             $table->string('Objet_evenement');
             $table->dateTime('Debut_evenement');
             $table->dateTime('Fin_evenement');
@@ -26,7 +26,8 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down(){
+    public function down(): void
+    {
         Schema::dropIfExists('evenements');
     }
 };

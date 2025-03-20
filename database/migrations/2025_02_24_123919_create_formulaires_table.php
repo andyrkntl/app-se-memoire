@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('objectifs', function (Blueprint $table) {
+        Schema::create('formulaires', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('Nom_objectif');
-            $table->string('Statut_objectif');
-            $table->date('Debut_objectif');
-            $table->date('Fin_objectif');
-            $table->string('Description_objectif');
+            $table->unsignedBigInteger('Nom_chantier')->index('formulaires_nom_chantier_foreign');
+            $table->decimal('pourcentage_realisation', 5);
+            $table->text('commentaires')->nullable();
+            $table->timestamps();
         });
     }
 
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('_objectifs');
+        Schema::dropIfExists('formulaires');
     }
 };

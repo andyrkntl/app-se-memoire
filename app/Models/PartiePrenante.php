@@ -11,15 +11,18 @@ class PartiePrenante extends Model
     protected $table = 'partie_prenantes';
 
     protected $fillable = [
-       'Nom_partie',
-        'Acronyme',
-        'Type',
-        'Contact',
+        'entite',
+        'fonction',
+        'nom_partie',
+        'email',
+        'contact'
     ];
 
 
 
-    public function projet() {
-        return $this->hasMany(Projet::class, 'partiePrenante_id');
+    public function projet()
+    {
+        return $this->belongsToMany(Projet::class)
+            ->withTimestamps();
     }
 }

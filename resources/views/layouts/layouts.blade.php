@@ -12,6 +12,7 @@
 
     <!-- Bootstrap Core CSS -->
     <link href="/assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/plugins/bootstrap/css/Animate.css" rel="stylesheet">
     <!-- chartist CSS -->
     <link href="/assets/plugins/chartist-js/dist/chartist.min.css" rel="stylesheet">
     <link href="/assets/plugins/chartist-js/dist/chartist-init.css" rel="stylesheet">
@@ -174,6 +175,7 @@
 
     <!-- Scripts -->
     <script src="/assets/plugins/jquery/jquery.min.js"></script>
+    <script src="/assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/plugins/popper/popper.min.js"></script>
     <script src="/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
     <script src="/js/jquery.slimscroll.js"></script>

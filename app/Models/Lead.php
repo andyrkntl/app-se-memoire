@@ -12,10 +12,10 @@ class Lead extends Model
     protected $table = 'leads';
 
     protected $fillable = [
-        'Nom_lead',
-        'Poste',
-        'Contact',
-        'Email',
+        'nom_lead',
+        'poste_lead',
+        'contact_lead',
+        'email_lead',
     ];
 
     public function projet()

@@ -27,8 +27,8 @@
                             <div class="form-group row">
                                 <label class="control-label text-right col-md-3">Nom Jalon</label>
                                 <div class="col-md-9">
-                                    <input type="text" name="Nom_jalon" value="{{ $jalon->Nom_jalon }}"
-                                        class="form-control">
+                                    <input type="text" name="Nom_jalon" value="{{ old('Nom_jalon', $jalon->Nom_jalon) }}"
+                                        required class="form-control">
                                 </div>
                             </div>
 
@@ -49,17 +49,25 @@
                             <div class="form-group row">
                                 <label class="control-label text-right col-md-3">Description</label>
                                 <div class="col-md-9">
-                                    <textarea class="form-control" name="Description">{{ $jalon->Description }}</textarea>
+                                    <textarea class="form-control" name="Description">{{ old('Description', $jalon->Description) }}</textarea>
                                 </div>
                             </div>
 
                             <div class="form-group row">
                                 <label class="control-label text-right col-md-3">Projet</label>
                                 <div class="col-md-9">
-                                    <textarea class="form-control" name="Projet">{{ $jalon->Projet }}</textarea>
+                                    <select name="projet_id" class="form-control">
+                                        @foreach ($projet as $p)
+                                            <!-- Liste des projets disponibles -->
+                                            <option value="{{ $p->id }}"
+                                                {{ $jalon->projet_id == $p->id ? 'selected' : '' }}>
+                                                {{ $p->Nom_projet }}
+                                            </option>
+                                        @endforeach
+
+                                    </select>
                                 </div>
                             </div>
-
 
                         </div>
                         <div class="form-actions">
@@ -79,5 +87,7 @@
                 </div>
             </div>
         </div>
+    </div>
+
     </div>
 @endsection

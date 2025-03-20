@@ -12,11 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('chantiers', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->string('Nom_chantier');
-            $table->string('accronime_chantier');
-            $table->string('direction');
-            $table->timestamps();
+            $table->integer('id', true);
+            $table->string('nom_chantier');
+            $table->string('acronyme');
+            $table->text('description');
+            $table->timestamp('created_at')->nullable()->useCurrent();
+            $table->timestamp('updated_at')->useCurrentOnUpdate()->nullable()->useCurrent();
         });
     }
 
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('_chantiers');
+        Schema::dropIfExists('chantiers');
     }
 };

@@ -13,10 +13,18 @@ class jalonController extends Controller
      */
     public function index()
     {
-        $jalon = DB::table('jalons')->get();
-        return view('jalon.indexJalon', [
-            'jalon' => $jalon,
-        ]);
+        $projet = DB::table('projets')->get();
+        $jalon = DB::table('jalons')
+            ->leftJoin('projets', 'projets.id', '=', 'jalons.projet_id') //jointure avec la table projets
+            ->select('jalons.*', 'projets.Nom_projet as projet_nom')
+            ->get();
+
+        if ($jalon) {
+            return view('jalon.indexJalon', [
+                'jalon' => $jalon,
+                'projet' => $projet
+            ]);
+        }
     }
 
     /**
@@ -34,9 +42,9 @@ class jalonController extends Controller
     {
 
         $validatedData = $request->validate([
+            'projet_id' => 'required|integer|exists:projets,id',
             'Nom_jalon' => 'required|string|max:255',
             'Description' => 'nullable|string|max:100',
-            'Jalon' => 'nullable|string|max:100',
             'Statut_jalon' => 'nullable|string|in:En cours,Achevé,En retard',
         ]);
 
@@ -68,12 +76,13 @@ class jalonController extends Controller
     public function edit($id)
     {
         $jalon = Jalon::find($id);
+        $projet = DB::table('projets')->get(); // Récupérer tous les projets
 
         if (!$jalon) {
             return redirect()->route('jalon.index')->with('error', 'Jalon introuvable');
         }
 
-        return view('jalon.modifierJalon', compact('jalon'));
+        return view('jalon.modifierJalon', compact('jalon', 'projet'));
     }
 
     /**
@@ -91,14 +100,14 @@ class jalonController extends Controller
                 'Nom_jalon' => 'required|string|max:255',
                 'Statut_jalon' => 'required|string',
                 'Description' => 'nullable|string',
-                'Projet' => 'nullable|string',
+                'projet_id' => 'nullable|integer|exists:projets,id',
             ]);
 
             $jalon->update([
-                'Nom_jalon' => $request->input('Nom_activite'),
-                'Statut_jalon' => $request->input('Statut_activite'),
+                'Nom_jalon' => $request->input('Nom_jalon'),
+                'Statut_jalon' => $request->input('Statut_jalon'),
                 'Description' => $request->input('Description'),
-                'Projet' => $request->input('Projet'),
+                'projet_id' => $request->input('projet_id'),
 
             ]);
 
