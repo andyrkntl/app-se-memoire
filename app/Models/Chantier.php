@@ -14,7 +14,7 @@ class Chantier extends Model
     protected $fillable = [
         'nom_chantier',
         'acronyme',
-        'description'
+        'description',
     ];
 
 

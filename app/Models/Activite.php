@@ -18,7 +18,7 @@ class Activite extends Model
         'date_debut',
         'date_prevue',
         'date_fin',
-        'statut_activite'
+        'statut_activite',
 
     ];
 

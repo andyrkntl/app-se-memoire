@@ -12,17 +12,14 @@ class PartiePrenante extends Model
 
     protected $fillable = [
         'entite',
-        'fonction',
-        'nom_partie',
-        'email',
-        'contact'
     ];
 
 
 
     public function projet()
     {
-        return $this->belongsToMany(Projet::class)
+        return $this->belongsToMany(Projet::class, 'projet_partie_prenante')
+            ->withPivot(['fonction', 'nom_partie', 'email_partie', 'contact_partie'])
             ->withTimestamps();
     }
 }

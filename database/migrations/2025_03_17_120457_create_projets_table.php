@@ -15,7 +15,6 @@ return new class extends Migration
             $table->integer('id', true);
             $table->foreignId('chantier_id')->constrained()->onDelete('cascade');
             $table->foreignId('lead_id')->constrained()->onDelete('cascade');
-            $table->foreignId('partie_prenante_id')->constrained()->onDelete('cascade');
             $table->string('nom_projet');
             $table->text('objectifs');
             $table->text('situation_actuelle');

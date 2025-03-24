@@ -19,7 +19,7 @@ class Jalon extends Model
         'date_debut',
         'date_prevue',
         'date_fin',
-        'statut_jalon'
+        'statut_jalon',
     ];
 
     public function activite()

@@ -14,6 +14,10 @@ return new class extends Migration
         Schema::create('projet_partie_prenante', function (Blueprint $table) {
             $table->foreignId('projet_id')->constrained()->onDelete('cascade');
             $table->foreignId('partie_prenante_id')->constrained()->onDelete('cascade');
+            $table->string('fonction');
+            $table->string('nom_partie');
+            $table->string('email_partie')->nullable();
+            $table->string('contact_partie')->nullable();
             $table->timestamps();
         });
     }

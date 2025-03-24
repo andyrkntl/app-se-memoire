@@ -18,7 +18,7 @@ class Projet extends Model
         'prochaines_etapes',
         'date_debut',
         'date_fin',
-        'statut_projet'
+        'statut_projet',
     ];
 
 
@@ -34,7 +34,8 @@ class Projet extends Model
 
     public function partiePrenante()
     {
-        return $this->belongsToMany(PartiePrenante::class)
+        return $this->belongsToMany(PartiePrenante::class, 'projet_partie_prenante')
+            ->withPivot(['fonction', 'nom_partie', 'email_partie', 'contact_partie'])
             ->withTimestamps();
     }
 

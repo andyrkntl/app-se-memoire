@@ -18,6 +18,7 @@
     <link href="/assets/plugins/chartist-js/dist/chartist-init.css" rel="stylesheet">
     <link href="/assets/plugins/chartist-plugin-tooltip-master/dist/chartist-plugin-tooltip.css" rel="stylesheet">
     <link href="/assets/plugins/css-chart/css-chart.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!--This page css - Morris CSS -->
     <link href="/assets/plugins/c3-master/c3.min.css" rel="stylesheet">
     <!-- Vector CSS -->
@@ -105,12 +106,12 @@
                     <ul id="sidebarnav">
                         <li>
                             <a class="waves-effect waves-dark" href="{{ url('/') }}">
-                                <i class="icon-home"></i>
-                                <span class="preview">Accueil</span>
+                                <i class="fa-sharp-duotone fa-solid fa-chart-pie"></i>
+                                <span class="preview">Tableau de bord</span>
                             </a>
                         </li>
 
-                        <li class="nav-item dropdown">
+                        {{-- <li class="nav-item dropdown">
                             <a class="waves-effect waves-dark dropdown-toggle" href="#" data-toggle="dropdown">
                                 <i class="ti-view-list-alt"></i>
                                 <span class="hide-menu">Suivi</span>
@@ -124,36 +125,36 @@
                                 <li><a class="dropdown-item" href="{{ route('chantier.index') }}">Chantier</a></li>
                                 <li><a class="dropdown-item" href="{{ route('projet.index') }}">Projet</a></li>
                             </ul>
-                        </li>
+                        </li> --}}
 
                         <li>
                             <a class="waves-effect waves-dark" href="{{ route('agenda.index') }}">
-                                <i class="icon-calender"></i>
+                                <i class="fa-sharp-duotone fa-regular fa-calendar-days"></i>
                                 <span class="preview">Agenda</span>
                             </a>
                         </li>
                         <li>
-                            <a class="waves-effect waves-dark" href="{{ route('evaluation.index') }}">
-                                <i class="ti-stats-up"></i>
-                                <span class="preview">Evaluation</span>
+                            <a class="waves-effect waves-dark" href="{{ route('projet.index') }}">
+                                <i class="fa-sharp-duotone fa-solid fa-diagram-project"></i>
+                                <span class="preview">Chantiers</span>
                             </a>
                         </li>
                         <li>
-                            <a class="waves-effect waves-dark" href="{{ route('kpsi.index') }}">
-                                <i class="ti-stats-up"></i>
-                                <span class="preview">Indicateur</span>
+                            <a class="waves-effect waves-dark" href="#">
+                                <i class="fa-duotone fa-solid fa-handshake-simple"></i>
+                                <span class="preview">Parties Prenantes</span>
                             </a>
                         </li>
                         <li>
-                            <a class="waves-effect waves-dark" href="{{ route('Utilisateur.index') }}">
-                                <i class="icon-user"></i>
-                                <span class="preview">Utilisateur</span>
+                            <a class="waves-effect waves-dark" href="#">
+                                <i class="fa-sharp-duotone fa-solid fa-user-tie"></i>
+                                <span class="preview">Utilisateurs</span>
                             </a>
                         </li>
                         <li>
                             <a class="waves-effect waves-dark" href="{{ route('logout') }}"
                                 onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                <i class="icon-logout"></i>
+                                <i class="fa-duotone fa-solid fa-right-from-bracket"></i>
                                 <span class="preview">Déconnexion</span>
                             </a>
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
