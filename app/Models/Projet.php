@@ -16,6 +16,7 @@ class Projet extends Model
         'objectifs',
         'situation_actuelle',
         'prochaines_etapes',
+        'taux_avancement',
         'date_debut',
         'date_fin',
         'statut_projet',
@@ -66,5 +67,73 @@ class Projet extends Model
     public function getDateFinFormattedAttribute()
     {
         return Carbon::parse($this->date_fin)->format('d/m/Y');
+    }
+
+    public function updateProjetProgress()
+    {
+        $this->load('jalon');
+        $jalons = $this->jalon;
+
+        if ($jalons->isEmpty()) {
+            $this->update([
+                'taux_avancement' => 0,
+                'statut_projet' => 'En cours',
+                'date_debut' => null,
+                'date_fin' => null,
+            ]);
+            return;
+        }
+
+        // Calcul du taux moyen des jalons
+        $tauxMoyen = $jalons->avg('taux_avancement');
+        $taux = round($tauxMoyen, 2);
+
+        // Détermination des dates
+        $dateDebut = $jalons->min('date_debut');
+        $dateFin = $jalons->max(function ($jalon) {
+            return $jalon->date_fin ?? $jalon->date_prevue;
+        });
+
+        // Détermination du statut
+        $statut = 'En cours';
+        $tousAcheves = $jalons->every(fn($j) => $j->statut_jalon === 'Achevé');
+
+        if ($tousAcheves) {
+            $statut = 'Achevé';
+        } elseif (Carbon::now()->gt($dateFin)) {
+            $statut = 'En retard';
+        }
+
+        $this->update([
+            'taux_avancement' => $taux,
+            'statut_projet' => $statut,
+            'date_debut' => $dateDebut,
+            'date_fin' => $dateFin
+        ]);
+
+        $this->refresh();
+    }
+
+
+
+    public function getJoursRestantsAttribute()
+    {
+        $dateFin = Carbon::parse($this->date_fin);
+        $maintenant = Carbon::now();
+
+        return $maintenant->diffInDays($dateFin, false); // false permet les valeurs négatives
+    }
+
+    public function getJoursRestantsFormattedAttribute()
+    {
+        $jours = $this->jours_restants;
+
+        if ($jours > 0) {
+            return "$jours jours restants";
+        } elseif ($jours === 0) {
+            return "Dernier jour !";
+        } else {
+            return "Terminé il y a " . abs($jours) . " jours";
+        }
     }
 }

@@ -128,7 +128,7 @@
                         </li> --}}
 
                         <li>
-                            <a class="waves-effect waves-dark" href="{{ route('agenda.index') }}">
+                            <a class="waves-effect waves-dark" href="#">
                                 <i class="fa-sharp-duotone fa-regular fa-calendar-days"></i>
                                 <span class="preview">Agenda</span>
                             </a>

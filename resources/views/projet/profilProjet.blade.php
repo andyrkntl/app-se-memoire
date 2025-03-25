@@ -90,7 +90,7 @@
         </div>
     </section>
 
-    @include('projet.detailJalonActivite')
+    @include('jalon.detailJalonActivite')
 
     <style>
         /* Animation et style prochaines étapes*/

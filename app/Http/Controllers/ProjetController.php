@@ -7,6 +7,7 @@ use App\Models\Lead;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Projet;
+use Carbon\Carbon;
 
 class ProjetController extends Controller
 {
@@ -16,6 +17,7 @@ class ProjetController extends Controller
     public function index(Request $request)
     {
         $query = Projet::with('chantier', 'lead');
+
 
         // Filtrer par chantier
         if ($request->filled('chantier_id')) {

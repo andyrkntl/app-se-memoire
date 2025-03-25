@@ -55,6 +55,7 @@
                                                 <div class="d-flex align-items-center">
                                                     <i class="bi bi-calendar-check mr-2"></i>
                                                     {{ $jalon->date_fin_formatted ?? 'Non définie' }}
+
                                                 </div>
                                             </td>
                                             <td>
@@ -99,6 +100,7 @@
                                                     style="background-color: {{ $jalon->color ?? 'gray' }}; color: white;">
                                                     {{ $jalon->statut_jalon ?? 'Inconnu' }}
                                                 </span>
+
                                             </td>
                                         </tr>
                                     </tbody>
@@ -120,7 +122,7 @@
                             <ul class="list-group">
                                 @foreach ($jalon->activite as $activite)
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <div>
+                                        <div class="flex-grow-1">
                                             <strong>{{ $activite->nom_activite }}</strong>
                                             <br>
                                             <small>
@@ -129,10 +131,24 @@
                                                 | Fin : {{ $activite->date_fin_formatted ?? 'Non définie' }}
                                             </small>
                                         </div>
-                                        <span class="badge"
-                                            style="color: white; background-color: {{ $activite->color }}">
-                                            {{ $activite->statut_activite }}
-                                        </span>
+                                        <div class="d-flex align-items-center">
+                                            <span class="badge mr-2"
+                                                style="color: white; background-color: {{ $activite->color }}">
+                                                {{ $activite->statut_activite }}
+                                            </span>
+
+
+                                            <button class="btn btn-sm btn-outline-primary mr-2 edit-activity"
+                                                data-toggle="modal" data-target="#editActivityModal"
+                                                data-id="{{ $activite->id }}" data-nom="{{ $activite->nom_activite }}"
+                                                data-debut="{{ $activite->date_debut_formatted }}"
+                                                data-prevue="{{ $activite->date_prevue_formatted }}"
+                                                data-fin="{{ $activite->date_fin_formatted ?? '' }}"
+                                                data-statut="{{ $activite->statut_activite }}">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+
+                                        </div>
                                     </li>
                                 @endforeach
                                 <li class="list-group-item text-muted">Ajouter une tâche...</li>
@@ -144,6 +160,13 @@
         </div>
     @endforeach
 </div>
+
+
+
+
+
+@include('activite.modifierActivite')
+
 
 <style>
     .card {
@@ -203,6 +226,7 @@
         transition: stroke-dashoffset 0.5s ease-out;
     }
 </style>
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

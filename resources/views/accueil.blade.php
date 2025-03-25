@@ -14,10 +14,10 @@
         </div>
         <div class="col-md-6 col-4 align-self-center">
             <div class="d-flex justify-content-end">
-                <a href="{{ route('activite.index') }}" class="btn btn-info d-none d-lg-block m-l-15">
+                <a href="#" class="btn btn-info d-none d-lg-block m-l-15">
                     <i class="fa fa-plus-circle"></i> Nouvelle Activité
                 </a>
-                <a href="{{ route('formulaires.create') }}" class="btn btn-info d-none d-lg-block m-l-15">
+                <a href="#" class="btn btn-info d-none d-lg-block m-l-15">
                     <i class="fa fa-plus-circle"></i> Formulaire de suivi
                 </a>
             </div>

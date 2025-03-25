@@ -16,6 +16,7 @@ class Jalon extends Model
         'projet_id',
         'nom_jalon',
         'description',
+        'taux_avancement',
         'date_debut',
         'date_prevue',
         'date_fin',
@@ -54,6 +55,79 @@ class Jalon extends Model
 
     public function getDateFinFormattedAttribute()
     {
-        return Carbon::parse($this->date_fin)->format('d/m/Y');
+        return $this->date_fin ? Carbon::parse($this->date_fin)->format('d/m/Y') : '';
+    }
+
+
+    public function updateJalonProgress()
+    {
+        // Recharger les activités depuis la base pour éviter le cache
+        $this->load('activite');
+        $activites = $this->activite;
+
+        if ($activites->isEmpty()) {
+            $this->update([
+                'taux_avancement' => 0,
+                'statut_jalon' => 'En cours',
+                'date_debut' => null,
+                'date_prevue' => null,
+                'date_fin' => null,
+            ]);
+            return;
+        }
+
+        // Calcul précis des activités achevées
+        $activitesAchevees = $activites->filter(function ($activite) {
+            return $activite->statut_activite === 'Achevé';
+        })->count();
+
+        $totalActivites = $activites->count();
+        $tauxAvancement = $totalActivites > 0
+            ? round(($activitesAchevees / $totalActivites) * 100, 2)
+            : 0;
+
+        // Détermination du statut avec vérification temporelle
+        $statut = 'En cours';
+        $dateLimiteDepassee = Carbon::now()->gt($activites->max('date_prevue'));
+
+        if ($activitesAchevees === $totalActivites) {
+            $statut = 'Achevé';
+        } elseif ($dateLimiteDepassee) {
+            $statut = 'En retard';
+        }
+
+        // Mise à jour atomique
+        $this->update([
+            'taux_avancement' => $tauxAvancement,
+            'statut_jalon' => $statut,
+            'date_debut' => $activites->min('date_debut'),
+            'date_prevue' => $activites->max('date_prevue'),
+            'date_fin' => $statut === 'Achevé' ? Carbon::now() : null
+        ]);
+
+        // Forcer le rafraîchissement des données
+        $this->refresh();
+    }
+
+
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saved(function ($jalon) {
+            $jalon->load('projet');
+            $jalon->projet?->updateProjetProgress();
+        });
+
+        static::updated(function ($jalon) {
+            $jalon->load('projet');
+            $jalon->projet?->updateProjetProgress();
+        });
+
+        static::deleted(function ($jalon) {
+            $jalon->load('projet');
+            $jalon->projet?->updateProjetProgress();
+        });
     }
 }

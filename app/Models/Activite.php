@@ -50,6 +50,50 @@ class Activite extends Model
 
     public function getDateFinFormattedAttribute()
     {
-        return Carbon::parse($this->date_fin)->format('d/m/Y');
+        return $this->date_fin ? Carbon::parse($this->date_fin)->format('d/m/Y') : '';
+    }
+
+    protected $casts = [
+        'date_debut' => 'datetime',
+        'date_prevue' => 'datetime',
+        'date_fin' => 'datetime',
+    ];
+
+
+    public function setStatutActiviteAttribute($value)
+    {
+        $this->attributes['statut_activite'] = $value;
+
+        // Si le statut devient "Achevé", on met à jour la date_fin
+        if ($value === 'Achevé' && is_null($this->date_fin)) {
+            $this->attributes['date_fin'] = Carbon::now();
+        }
+
+        // Si l'activité n'est pas achevée et que la date prévue est dépassée, elle est en retard
+        if ($value !== 'Achevé' && Carbon::now()->greaterThan($this->date_prevue)) {
+            $this->attributes['statut_activite'] = 'En retard';
+        }
+    }
+
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saved(function ($activite) {
+            // Recharger la relation pour éviter le cache
+            $activite->load('jalon');
+            if ($activite->jalon) {
+                $activite->jalon->updateJalonProgress();
+            }
+        });
+
+        static::deleted(function ($activite) {
+            $activite->jalon->updateJalonProgress();
+        });
+
+        static::updated(function ($activite) {
+            $activite->jalon->updateJalonProgress();
+        });
     }
 }

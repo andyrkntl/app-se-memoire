@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Activite;
+use App\Models\Jalon;
+use Carbon\Carbon;
 
 class ActiviteController extends Controller
 {
@@ -72,74 +74,50 @@ class ActiviteController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Activite $activite)
     {
-        // Récupérer l'activité par son ID
-        $activite = Activite::findOrFail($id);
-
-
-
-
-        $activite = DB::table('activites')
-
-            ->join('jalons', 'jalons.id', '=', 'activites.jalon_id')
-            ->join('projets', 'projets.id', '=', 'activites.projet_id')
-            ->leftJoin('leads', 'leads.id', '=', 'projets.lead_id') // Jointure avec la table leads
-            ->leftJoin('partie_prenantes', 'partie_prenantes.id', '=', 'projets.partiePrenante_id') // Jointure avec la table partie_prenantes
-            ->leftJoin('chantiers', 'chantiers.id', '=', 'projets.chantier_id')
-
-            ->select('jalons.*', 'leads.*', 'partie_prenantes.*', 'chantiers.*', 'projets.*', 'activites.*')
-            ->where('activites.id', $id)
-            ->first();
-
-        return view('activite.profilActivite', compact('activite'));
+        return response()->json($activite);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Activite $activite)
     {
-        $activite = activite::find($id);
-
-        if (!$activite) {
-            return redirect()->route('activite.index')->with('error', 'activite introuvable');
-        }
-
-        return view('activite.modifierActivite', compact('activite'));
+        $jalons = Jalon::all();
+        return view('activites.edit', compact('activite', 'jalons'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Activite $activite)
     {
-        $validatedData = $request->validate([
-            'Nom_activite' => 'required|string|max:50',
-            'Statut_activite' => 'nullable|string|in:En cours,Achevé,En retard',
-            'Date_debut' => 'required|date',
-            'Date_fin' => 'required|date|after_or_equal:Debut_evenement',
-            'Valeur_cible' => 'required|string',
-            'Valeur_actuel' => 'required|string',
-            'Prochaine_etape' => 'nullable|string',
+        $validated = $request->validate([
+            'nom_activite' => 'required|string|max:255',
+            'date_debut' => 'required|date_format:d/m/Y',
+            'date_prevue' => 'required|date_format:d/m/Y|after_or_equal:date_debut',
+            'date_fin' => 'nullable|date_format:d/m/Y|after_or_equal:date_debut',
+            'statut_activite' => 'required|in:En cours,Achevé,En retard'
         ]);
-        $activite = activite::find($id);
 
-        if (!$activite) {
-            return redirect()->route('activite.index')->with('error', 'activite introuvable');
+        try {
+            $activite->update([
+                'nom_activite' => $validated['nom_activite'],
+                'date_debut' => Carbon::createFromFormat('d/m/Y', $validated['date_debut']),
+                'date_prevue' => Carbon::createFromFormat('d/m/Y', $validated['date_prevue']),
+                'date_fin' => $validated['date_fin']
+                    ? Carbon::createFromFormat('d/m/Y', $validated['date_fin'])
+                    : null,
+                'statut_activite' => $validated['statut_activite']
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'errors' => ['date_error' => 'Format de date invalide']
+            ], 422);
         }
 
-        $activite->update([
-            'Nom_activite' => $validatedData['Nom_activite'],
-            'Statut_activite' => $validatedData['Statut_activite'],
-            'Date_debut' => $validatedData['Date_debut'],
-            'Date_fin' => $validatedData['Date_fin'],
-            'Valeur_cible' => $validatedData['Valeur_cible'],
-            'Valeur_actuel' => $validatedData['Valeur_actuel'],
-            'Prochaine_etape' => $validatedData['Prochaine_etape'],
-        ]);
-
-        return redirect()->route('activite.index')->with('success', 'Votre modification a été enregistrée avec succès.');
+        return response()->json(['success' => true]);
     }
 
     /**

@@ -95,9 +95,19 @@
                         <div class="ml-3">
                             <p><strong>Responsable : </strong>{{ $projet->lead->nom_lead }}</p>
                         </div>
+                        {{-- <div class="d-flex ml-3 mb-3">
+                            <div class="flex-fill mr-2"><strong>Date début : </strong> {{ $projet->date_debut_formatted }}
+                            </div>
+                            <div class="flex-fill "><strong>Date fin : </strong>{{ $projet->date_fin_formatted }}</div>
+                        </div> --}}
                         <div class="d-flex ml-3 mb-3">
-                            <div class="flex-fill mr-2"><strong>Date début : </strong> {{ $projet->date_debut }}</div>
-                            <div class="flex-fill "><strong>Date fin : </strong>{{ $projet->date_fin }}</div>
+                            <div class="flex-fill mr-2">
+                                <strong>Jours restants : </strong>
+                                <span
+                                    class="@if ($projet->jours_restants > 0) jours-positif @elseif($projet->jours_restants < 0)jours-negatif @else jours-zero @endif">
+                                    {{ $projet->jours_restants_formatted }}
+                                </span>
+                            </div>
                         </div>
                         <div class="ml-3">
                             <p><strong>Objectifs : </strong>
@@ -166,6 +176,20 @@
             color: #007bff;
             text-decoration: underline;
             font-size: 14px;
+        }
+
+
+        /* jour restants */
+        .jours-positif {
+            color: green;
+        }
+
+        .jours-negatif {
+            color: red;
+        }
+
+        .jours-zero {
+            font-weight: bold;
         }
     </style>
 

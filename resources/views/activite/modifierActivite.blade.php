@@ -1,127 +1,220 @@
-@extends('layouts.layouts')
+<!-- Bouton pour ouvrir le modal -->
+{{-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editActiviteModal{{ $activite->id }}">
+    Modifier l'activité
+</button> --}}
 
-@section('content')
-<div class="row page-titles">
-    <div class="col-md-5 col-8 align-self-center">
-        <h3 class="text-themecolor m-b-0 m-t-0">Jalon</h3>
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
-            <li class="breadcrumb-item active">Jalon</li>
-            <li class="breadcrumb-item active">Modifier un jalon</li>
-        </ol>
-    </div>
-</div>
+<!-- Modal -->
+{{-- <div class="modal fade" id="editActiviteModal{{ $activite->id }}" tabindex="-1" role="dialog">
 
-<div class="row">
-    <div class="col-lg-12">
-        <div class="card card-outline-success">
-            <div class="card-header">
-                <h4 class="m-b-0 text-white">Modifier une activité</h4>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Modifier l'activité: {{ $activite->nom_activite }}</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
             </div>
-            <div class="card-body">
-<form action="{{ route('activite.update', $activite->id) }}" method="POST" class="form-horizontal from-border">
-    @method('PUT')
-    @csrf
-    <div class="form-body">
-        <h3 class="box-title">Informations sur l'activité</h3>
-        <hr class="m-t-0 m-b-40">
+            <form method="POST" action="#">
+                @csrf
+                @method('PUT')
 
-        <!-- Nom de l'activité -->
-        <div class="row">
-            <div class="col-md-6">
-                <div class="form-group row">
-                    <label class="control-label text-right col-md-3">Activité</label>
-                    <div class="col-md-9">
-                        <input type="text" name="Nom_activite" class="form-control" value="{{ $activite->Nom_activite }}">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="nom_activite">Nom de l'activité</label>
+                        <input type="text" class="form-control" name="nom_activite"
+                            value="{{ old('nom_activite', $activite->nom_activite) }}" required>
                     </div>
-                </div>
-            </div>
 
-            <!-- Statut -->
-            <div class="col-md-6">
-                <div class="form-group row">
-                    <label class="control-label text-right col-md-3">Statut</label>
-                    <div class="col-md-9">
-                        <select name="Statut_activite" class="form-control">
-                            <option value="En cours" {{ $activite->Statut_activite == 'En cours' ? 'selected' : '' }}>En cours</option>
-                            <option value="Achevé" {{ $activite->Statut_activite == 'Achevé' ? 'selected' : '' }}>Achevé</option>
-                            <option value="En retard" {{ $activite->Statut_activite == 'En retard' ? 'selected' : '' }}>En retard</option>
+                    <div class="form-group">
+                        <label for="date_debut">Date de début (actuelle: {{ $activite->date_debut_formatted }})</label>
+                        <input type="date" class="form-control" name="date_debut"
+                            value="{{ old('date_debut', $activite->date_debut_formatted) }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date_prevue">Date prévue (actuelle: {{ $activite->date_prevue_formatted }})</label>
+                        <input type="date" class="form-control" name="date_prevue"
+                            value="{{ old('date_prevue', $activite->date_prevue_formatted) }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date_fin">
+                            Date de fin
+                            @if ($activite->date_fin)
+                                (actuelle: {{ $activite->date_fin_formatted }})
+                            @endif
+                        </label>
+                        <input type="date" class="form-control" name="date_fin"
+                            value="{{ old('date_fin', $activite->date_fin_formatted) }}">
+                        <small class="form-text text-muted">Laissé vide si non terminée</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="statut_activite">Statut actuel:
+                            <span
+                                class="badge badge-{{ $activite->statut_activite === 'Achevé' ? 'success' : ($activite->statut_activite === 'En retard' ? 'danger' : 'primary') }}">
+                                {{ $activite->statut_activite }}
+                            </span>
+                        </label>
+                        <select class="form-control" name="statut_activite" required>
+                            <option value="En cours" {{ $activite->statut_activite === 'En cours' ? 'selected' : '' }}>
+                                En cours</option>
+                            <option value="Achevé" {{ $activite->statut_activite === 'Achevé' ? 'selected' : '' }}>
+                                Achevé</option>
+                            <option value="En retard"
+                                {{ $activite->statut_activite === 'En retard' ? 'selected' : '' }}>En retard</option>
                         </select>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- Dates -->
-        <div class="row">
-            <div class="col-md-6">
-                <div class="form-group row">
-                    <label class="control-label text-right col-md-3">Date Début</label>
-                    <div class="col-md-9">
-                        <input type="date" name="Date_debut" class="form-control" value="{{ $activite->Date_debut }}">
-                    </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                    <button type="submit" class="btn btn-primary">Sauvegarder</button>
                 </div>
-            </div>
-            <div class="col-md-6">
-                <div class="form-group row">
-                    <label class="control-label text-right col-md-3">Date Fin</label>
-                    <div class="col-md-9">
-                        <input type="date" name="Date_fin" class="form-control" value="{{ $activite->Date_fin }}">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Valeurs -->
-        <div class="row">
-            <div class="col-md-6">
-                <div class="form-group row">
-                    <label class="control-label text-right col-md-3">Valeur Cible</label>
-                    <div class="col-md-9">
-                        <textarea name="Valeur_cible" class="form-control">{{ $activite->Valeur_cible }}</textarea>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="form-group row">
-                    <label class="control-label text-right col-md-3">Valeur Actuelle</label>
-                    <div class="col-md-9">
-                        <textarea name="Valeur_actuel" class="form-control">{{ $activite->Valeur_actuel }}</textarea>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Prochaines étapes -->
-        <div class="row">
-            <div class="col-md-10">
-                <div class="form-group row">
-                    <label class="control-label text-right col-md-3">Prochaines Étapes</label>
-                    <div class="col-md-9">
-                        <textarea name="Prochaine_etape" class="form-control">{{ $activite->Prochaine_etape }}</textarea>
-                    </div>
-                </div>
-            </div>
+            </form>
         </div>
     </div>
-    <hr>
+</div> --}}
 
-    <!-- Boutons -->
-    <div class="form-actions">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="row">
-                    <div class="offset-sm-3 col-md-9">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-                        <button type="submit" class="btn btn-primary">Enregistrer les changements</button>
+
+
+<!-- Modal d'édition -->
+<div class="modal fade" id="editActivityModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Modifier l'activité</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <form id="editActivityForm">
+                <div class="modal-body">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="id" id="editActivityId">
+
+                    <div class="form-group">
+                        <label>Nom de l'activité</label>
+                        <input type="text" name="nom_activite" id="editNom" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Date de début</label>
+                        <input type="date" name="date_debut" id="editDebut" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Date prévue</label>
+                        <input type="date" name="date_prevue" id="editPrevue" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Date de fin</label>
+                        <input type="date" name="date_fin" id="editFin" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Statut</label>
+                        <select name="statut_activite" id="editStatut" class="form-control" required>
+                            <option value="En cours">En cours</option>
+                            <option value="Achevé">Achevé</option>
+                            <option value="En retard">En retard</option>
+                        </select>
                     </div>
                 </div>
-            </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                    <button type="submit" class="btn btn-primary">Sauvegarder</button>
+                </div>
+            </form>
         </div>
     </div>
-</form>
 </div>
-</div>
-</div>
-</div>
-@endsection
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Conversion d/m/Y => Y-m-d
+        const toIsoDate = (dateString) => {
+            if (!dateString || dateString === 'Non définie') return '';
+            const [d, m, Y] = dateString.split('/');
+            return `${Y}-${m}-${d}`;
+        };
+
+        // Conversion Y-m-d => d/m/Y
+        const toFormattedDate = (isoDate) => {
+            if (!isoDate) return '';
+            const [Y, m, d] = isoDate.split('-');
+            return `${d}/${m}/${Y}`;
+        };
+
+        // Pré-remplissage
+        $(document).on('click', '.edit-activity', function() {
+            const $btn = $(this);
+
+            $('#editActivityId').val($btn.data('id'));
+            $('#editNom').val($btn.data('nom'));
+            $('#editDebut').val(toIsoDate($btn.data('debut')));
+            $('#editPrevue').val(toIsoDate($btn.data('prevue')));
+            $('#editFin').val(toIsoDate($btn.data('fin')));
+            $('#editStatut').val($btn.data('statut'));
+        });
+
+        // Soumission
+        $('#editActivityForm').submit(function(e) {
+            e.preventDefault();
+            const formData = {
+                id: $('#editActivityId').val(),
+                nom_activite: $('#editNom').val(),
+                date_debut: toFormattedDate($('#editDebut').val()),
+                date_prevue: toFormattedDate($('#editPrevue').val()),
+                date_fin: toFormattedDate($('#editFin').val()),
+                statut_activite: $('#editStatut').val(),
+                _token: $('input[name="_token"]').val(),
+                _method: 'PUT'
+            };
+
+            $.ajax({
+                url: `/activites/${formData.id}`,
+                method: 'POST',
+                data: formData,
+                success: () => {
+                    $('#editActivityModal').modal('hide');
+                    window.location.reload();
+                },
+                error: (xhr) => {
+                    const errors = xhr.responseJSON?.errors;
+                    let message = 'Erreur lors de la mise à jour';
+                    if (errors) message = Object.values(errors).join('\n');
+                    alert(message);
+                }
+            });
+        });
+    });
+
+
+
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        @if (session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Succès',
+                text: '{{ session('success') }}',
+                timer: 3000,
+                showConfirmButton: 'fermer'
+            });
+        @elseif (session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Erreur',
+                text: '{{ session('error') }}',
+                timer: 3000,
+                showConfirmButton: 'fermer'
+            });
+        @endif
+    });
+</script>
