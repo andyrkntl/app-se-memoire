@@ -60,6 +60,8 @@ class Activite extends Model
     ];
 
 
+
+
     public function setStatutActiviteAttribute($value)
     {
         $this->attributes['statut_activite'] = $value;
@@ -81,15 +83,23 @@ class Activite extends Model
         parent::boot();
 
         static::saved(function ($activite) {
-            // Recharger la relation pour éviter le cache
             $activite->load('jalon');
             if ($activite->jalon) {
                 $activite->jalon->updateJalonProgress();
+                // Mettre à jour le projet associé
+                $projet = $activite->jalon->projet;
+                $projet->updateSituations();
             }
         });
 
         static::deleted(function ($activite) {
-            $activite->jalon->updateJalonProgress();
+            $jalon = $activite->jalon;
+            if ($jalon) {
+                $jalon->updateJalonProgress();
+                // Mettre à jour le projet associé
+                $projet = $jalon->projet;
+                $projet->updateSituations();
+            }
         });
 
         static::updated(function ($activite) {

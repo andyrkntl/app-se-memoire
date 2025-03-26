@@ -42,7 +42,10 @@ class Projet extends Model
 
     public function activite()
     {
-        return $this->hasManyThrough(Activite::class, Jalon::class);
+        return $this->hasManyThrough(
+            Activite::class,
+            Jalon::class,
+        );
     }
 
     public function lead()
@@ -88,6 +91,7 @@ class Projet extends Model
         $tauxMoyen = $jalons->avg('taux_avancement');
         $taux = round($tauxMoyen, 2);
 
+
         // Détermination des dates
         $dateDebut = $jalons->min('date_debut');
         $dateFin = $jalons->max(function ($jalon) {
@@ -104,6 +108,7 @@ class Projet extends Model
             $statut = 'En retard';
         }
 
+
         $this->update([
             'taux_avancement' => $taux,
             'statut_projet' => $statut,
@@ -114,6 +119,35 @@ class Projet extends Model
         $this->refresh();
     }
 
+
+
+    public function updateSituations()
+    {
+        $today = Carbon::today();
+
+        // Récupérer les 3 dernières activités passées ou en cours
+        $situation_actuelle = $this->activite()
+            ->where('activites.date_debut', '<=', $today)
+            ->whereIn('activites.statut_activite', ['en cours', 'achevé'])
+            ->orderBy('activites.date_debut', 'desc')
+            ->limit(3)
+            ->pluck('nom_activite')
+            ->implode('; ');
+
+        // Récupérer les 3 prochaines activités à venir
+        $prochaines_etapes = $this->activite()
+            ->where('activites.date_debut', '>', $today)
+            ->orderBy('activites.date_debut', 'asc')
+            ->limit(3)
+            ->pluck('nom_activite')
+            ->implode('; ');
+
+        // Mettre à jour les champs et sauvegarder
+        $this->update([
+            'situation_actuelle' => $situation_actuelle,
+            'prochaines_etapes' => $prochaines_etapes,
+        ]);
+    }
 
 
     public function getJoursRestantsAttribute()
