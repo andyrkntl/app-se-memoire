@@ -20,6 +20,8 @@ class Projet extends Model
         'date_debut',
         'date_fin',
         'statut_projet',
+        'chantier_id',
+        'lead_id',
     ];
 
 
@@ -32,6 +34,12 @@ class Projet extends Model
     {
         return $this->hasMany(Jalon::class, 'projet_id');
     }
+
+    public function document()
+    {
+        return $this->hasMany(Document::class, 'projet_id');
+    }
+
 
     public function partiePrenante()
     {

@@ -1,6 +1,14 @@
 @extends('layouts.layouts')
 
 @section('content')
+    @if (session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+
+
+
     <div class="row page-titles">
         <div class="col-md-5 col-8 align-self-center">
             <h3 class="text-themecolor mb-0 mt-0">Fiche de Projet</h3>
@@ -14,7 +22,7 @@
 
 
     <section class="container mb-5">
-        <div class="row justify-content-center">
+        <div class="row ">
             <div class="col-md-8">
                 <!-- En-tête cliquable amélioré -->
                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -87,9 +95,38 @@
                     </div>
                 </div>
             </div>
+
+
+            <!-- Colonne pour ajouter des documents -->
+            <div class="col-md-4 mt-5">
+                <button type="button" class="btn btn-primary mb-2" data-toggle="modal" data-target="#addDocumentModal">
+                    <i class="bi bi-plus-circle"></i> Ajouter un document
+                </button>
+
+
+                <a href="{{ route('document.index', $projet->id) }}" class="btn btn-outline-secondary mb-2">
+                    <i class="fa-sharp-duotone fa-solid fa-arrow-right"></i>
+                    Voir les documents
+                </a>
+
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
         </div>
     </section>
 
+    @include('documents.ajoutDocument')
     @include('jalon.detailJalonActivite')
 
     <style>

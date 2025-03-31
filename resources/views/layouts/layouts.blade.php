@@ -140,7 +140,7 @@
                             </a>
                         </li>
                         <li>
-                            <a class="waves-effect waves-dark" href="#">
+                            <a class="waves-effect waves-dark" href="{{ route('partiePrenante.index') }}">
                                 <i class="fa-duotone fa-solid fa-handshake-simple"></i>
                                 <span class="preview">Parties Prenantes</span>
                             </a>

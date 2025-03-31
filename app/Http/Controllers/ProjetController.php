@@ -58,24 +58,20 @@ class ProjetController extends Controller
      */
     public function store(Request $request)
     {
-        $projet = DB::table('projets')->insert([
-            'lead_id' => $request['lead_id'],
-            'partiePrenante_id' => $request['partiePrenante_id'],
-            'chantier_id' => $request['chantier_id'],
-            'Nom_projet' => $request['Nom_projet'],
-            'Description' => $request['Description'],
-            'Historiques' => $request['Historiques'],
-            'Ressources' => $request['Ressources'],
-            'Objectif' => $request['Objectif'],
-            'Duree_projet' => $request['Duree_projet'],
-            'statut' => $request['statut'],
-
+        $validated = $request->validate([
+            'chantier_id' => 'required|integer|exists:chantiers,id',
+            'lead_id' => 'required|integer|exists:leads,id',
+            'nom_projet' => 'required|string|max:255',
+            'objectifs' => 'required|string',
+            'date_debut' => 'nullable|date',
+            'date_fin' => 'nullable|date|after_or_equal:date_debut',
         ]);
 
-        if ($projet) {
-            return back();
-        }
+        Projet::create($validated);
+
+        return redirect()->back()->with('success', 'Projet ajouté avec succès.');
     }
+
 
     /**
      * Display the specified resource.
@@ -105,22 +101,31 @@ class ProjetController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Projet $projet)
     {
-        //
+        $validated = $request->validate([
+            'chantier_id' => 'required|integer|exists:chantiers,id',
+            'lead_id' => 'required|integer|exists:leads,id',
+            'nom_projet' => 'required|string|max:255',
+            'objectifs' => 'required|string',
+            'date_debut' => 'nullable|date',
+            'date_fin' => 'nullable|date|after_or_equal:date_debut',
+        ]);
+
+        $projet->update($validated);
+
+        return redirect()->back()->with('success', 'Projet modifié avec succès.');
     }
+
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        $projet = DB::table('projets')
-            ->where('projets.id', $id)
-            ->delete();
+        $projet = Projet::findOrFail($id);
+        $projet->delete();
 
-        if ($projet) {
-            return back();
-        }
+        return redirect()->back()->with('success', 'Projet supprimé avec succès !');
     }
 }

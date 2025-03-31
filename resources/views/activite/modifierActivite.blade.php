@@ -2,7 +2,7 @@
 <div class="modal fade" id="editActivityModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header bg-primary text-white">
                 <h5 class="modal-title">Modifier l'activité</h5>
                 <button type="button" class="close" data-dismiss="modal">
                     <span>&times;</span>

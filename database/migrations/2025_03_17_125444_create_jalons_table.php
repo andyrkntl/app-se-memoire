@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('nom_jalon');
             $table->string('description')->nullable();
             $table->decimal('taux_avancement', 5, 2)->default(0.00);
-            $table->date('date_debut');
-            $table->date('date_prevue');
+            $table->date('date_debut')->nullable();
+            $table->date('date_prevue')->nullable();
             $table->date('date_fin')->nullable();
             $table->enum('statut_jalon', ['En cours', 'Achevé', 'En retard'])->nullable()->default('En cours');
             $table->timestamp('created_at')->nullable()->useCurrent();

@@ -3,6 +3,15 @@
 
 <div class="container mt-4">
     <h3 class="text-center">Progression du projet : {{ $projet->nom_projet }}</h3>
+    <div class=" mb-4">
+        {{-- bouton ajout jalon --}}
+        <button class="btn btn-success" data-toggle="modal" data-target="#addJalonModal">
+            <i class="bi bi-plus-circle"></i> Ajouter un nouveau jalon
+        </button>
+    </div>
+    @include('jalon.ajoutJalon') <!-- Ajoutez cette ligne -->
+
+
 
     @foreach ($projet->jalon as $jalon)
         <div class="card mb-3">
@@ -16,6 +25,7 @@
                 </button>
             </div>
 
+
             <!-- Contenu principal du jalon -->
             <div id="jalonContent{{ $jalon->id }}" class="collapse show">
                 <div class="card-body">
@@ -27,6 +37,23 @@
                             style="cursor: pointer">
                             <h5 class="mb-0">📋 Détails du jalon</h5>
                             <i class="bi bi-chevron-down collapse-icon"></i>
+
+
+                            <div class="d-flex align-items-center">
+                                {{-- bouton de modification d'un jalon --}}
+                                <button class="btn btn-sm btn-outline-primary  mr-2 edit-jalon" data-toggle="modal"
+                                    data-target="#editJalonModal" data-id="{{ $jalon->id }}"
+                                    data-nom="{{ $jalon->nom_jalon }}" data-description="{{ $jalon->description }}">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+
+
+                                <!-- Bouton de suppression du jalon -->
+                                <button class="btn btn-sm btn-outline-danger delete-jalon-btn"
+                                    data-jalon-id="{{ $jalon->id }}">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
                         </div>
 
                         <div id="detailsJalon{{ $jalon->id }}" class="collapse show">
@@ -101,6 +128,9 @@
                                                     {{ $jalon->statut_jalon ?? 'Inconnu' }}
                                                 </span>
 
+
+
+
                                             </td>
                                         </tr>
                                     </tbody>
@@ -119,9 +149,68 @@
                         </div>
 
                         <div id="activitesJalon{{ $jalon->id }}" class="collapse show">
+
+
+
+                            <!-- Filtre des activités -->
+                            <form action="{{ route('activite.filter', $projet->id) }}" method="GET" class="mb-3">
+                                <input type="hidden" name="jalon_id" value="{{ $jalon->id }}">
+                                <!-- Cache l'id du jalon -->
+
+                                <div class="row g-2 align-items-center">
+                                    <!-- Filtrer par statut -->
+                                    <div class="col-12 col-md-3">
+                                        <select name="statut_activite" class="form-control">
+                                            <option value="">Filtrer par statut</option>
+                                            <option value="En cours"
+                                                {{ request('statut_activite') == 'En cours' ? 'selected' : '' }}>En
+                                                cours</option>
+                                            <option value="Achevé"
+                                                {{ request('statut_activite') == 'Achevé' ? 'selected' : '' }}>Achevé
+                                            </option>
+                                            <option value="En retard"
+                                                {{ request('statut_activite') == 'En retard' ? 'selected' : '' }}>En
+                                                retard</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Filtrer par date -->
+                                    <div class="col-12 col-md-3">
+                                        <select name="date_activite" class="form-control">
+                                            <option value="">Filtrer par date</option>
+                                            <option value="asc"
+                                                {{ request('date_activite') == 'asc' ? 'selected' : '' }}>Du plus
+                                                ancien au plus récent</option>
+                                            <option value="desc"
+                                                {{ request('date_activite') == 'desc' ? 'selected' : '' }}>Du plus
+                                                récent au plus ancien</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Bouton de soumission -->
+                                    <div class="col-6 col-md-3">
+                                        <button type="submit" class="btn btn-primary w-100">Appliquer les
+                                            filtres</button>
+                                    </div>
+
+                                    <!-- Bouton de réinitialisation des filtres -->
+                                    <div class="col-6 col-md-3">
+                                        <a href="{{ route('activite.filter', $projet->id) }}"
+                                            class="btn btn-secondary w-100">Réinitialiser</a>
+                                    </div>
+                                </div>
+                            </form>
+
+
+
+
+
+
+
                             <ul class="list-group">
                                 @foreach ($jalon->activite as $activite)
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center"
+                                        data-activity-id="{{ $activite->id }}">
                                         <div class="flex-grow-1">
                                             <strong>{{ $activite->nom_activite }}</strong>
                                             <br>
@@ -137,21 +226,39 @@
                                                 {{ $activite->statut_activite }}
                                             </span>
 
-
+                                            {{-- bouton de modification activite --}}
                                             <button class="btn btn-sm btn-outline-primary mr-2 edit-activity"
                                                 data-toggle="modal" data-target="#editActivityModal"
-                                                data-id="{{ $activite->id }}" data-nom="{{ $activite->nom_activite }}"
+                                                data-id="{{ $activite->id }}"
+                                                data-nom="{{ $activite->nom_activite }}"
                                                 data-debut="{{ $activite->date_debut_formatted }}"
                                                 data-prevue="{{ $activite->date_prevue_formatted }}"
                                                 data-fin="{{ $activite->date_fin_formatted ?? '' }}"
                                                 data-statut="{{ $activite->statut_activite }}">
                                                 <i class="bi bi-pencil"></i>
                                             </button>
+                                            {{-- bouton de suppression activite --}}
+                                            <button class="btn btn-sm btn-outline-danger delete-activity-btn"
+                                                data-activite-id="{{ $activite->id }}">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
 
                                         </div>
                                     </li>
                                 @endforeach
-                                <li class="list-group-item text-muted">Ajouter une tâche...</li>
+
+                                {{-- list ajout d'une nouvelle activite --}}
+                                <li class="list-group-item p-0 border-0">
+                                    <div class="add-activity-container">
+                                        <!-- Élément déclencheur -->
+                                        <div class="clickable-add-activity px-3 py-2"
+                                            data-jalon-id="{{ $jalon->id }}"
+                                            style="cursor: pointer; background-color: #f8f9fa;">
+                                            <i class="bi bi-plus-circle"></i> Ajouter une activité...
+                                        </div>
+                                        @include('activite.ajoutActivite')
+                                    </div>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -164,8 +271,22 @@
 
 
 
-
+@include('jalon.modifierJalon')
 @include('activite.modifierActivite')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 <style>
@@ -249,3 +370,96 @@
         });
     });
 </script>
+
+
+
+
+{{-- confirmation suppression d'une activité --}}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Sélectionner tous les boutons de suppression
+        const deleteButtons = document.querySelectorAll('.delete-activity-btn');
+
+        // Parcourir chaque bouton et ajouter l'événement click
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const activiteId = this.getAttribute('data-activite-id');
+
+                // Afficher SweetAlert2 pour confirmer la suppression
+                Swal.fire({
+                    title: 'Êtes-vous sûr de supprimer cette activité ?',
+                    text: "Vous ne pourrez pas revenir en arrière !",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Oui, supprimer',
+                    cancelButtonText: 'Annuler',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Si l'utilisateur confirme, envoyer la requête pour supprimer l'activité
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = '/activites/' +
+                            activiteId; // Remplace cette URL par celle qui correspond à ta route de suppression
+                        form.innerHTML = `
+                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="_method" value="DELETE">
+                    `;
+
+                        // Soumettre le formulaire
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                });
+            });
+        });
+    });
+</script>
+
+
+
+
+{{-- confirmation suppression d'un jalon --}}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Sélectionner tous les boutons de suppression de jalon
+        const deleteJalonButtons = document.querySelectorAll('.delete-jalon-btn');
+
+        // Parcourir chaque bouton et ajouter l'événement click
+        deleteJalonButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const jalonId = this.getAttribute('data-jalon-id');
+
+                // Afficher SweetAlert2 pour confirmer la suppression du jalon
+                Swal.fire({
+                    title: 'Êtes-vous sûr de supprimer ce jalon ?',
+                    text: "Vous ne pourrez pas revenir en arrière !",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Oui, supprimer',
+                    cancelButtonText: 'Annuler',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Si l'utilisateur confirme, envoyer la requête pour supprimer le jalon
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = '/jalons/' +
+                            jalonId; // Remplace cette URL par celle qui correspond à ta route de suppression
+                        form.innerHTML = `
+                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="_method" value="DELETE">
+                    `;
+
+                        // Soumettre le formulaire
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                });
+            });
+        });
+    });
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

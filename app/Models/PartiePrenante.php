@@ -18,7 +18,7 @@ class PartiePrenante extends Model
 
     public function projet()
     {
-        return $this->belongsToMany(Projet::class, 'projet_partie_prenante')
+        return $this->belongsToMany(Projet::class, 'projet_partie_prenante', 'partie_prenante')
             ->withPivot(['fonction', 'nom_partie', 'email_partie', 'contact_partie'])
             ->withTimestamps();
     }

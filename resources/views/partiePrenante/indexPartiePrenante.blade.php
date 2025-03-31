@@ -1,158 +1,145 @@
 @extends('layouts.layouts')
 @section('content')
-
-<div class="row page-titles">
-    <div class="col-md-5 col-8 align-self-center">
-        <h3 class="text-themecolor m-b-0 m-t-0">Partie prenantes</h3>
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
-            <li class="breadcrumb-item active">Liste des parties prenantes</li>
-        </ol>
-    </div>
-    <div class="col-md-7 col-4 align-self-center">
-        <div class="d-flex m-t-10 justify-content-end">
-            <div class="d-flex m-r-20 m-l-10 hidden-md-down">
-
-            </div>
-            <div class="d-flex m-r-20 m-l-10 hidden-md-down">
-
-
-            </div>
-
+    <div class="row page-titles">
+        <div class="col-md-5 col-8 align-self-center">
+            <h3 class="text-themecolor m-b-0 m-t-0">Parties prenantes</h3>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                <li class="breadcrumb-item active">Liste des parties prenantes</li>
+            </ol>
         </div>
     </div>
-</div>
 
-
-    <!-- Column
-    <div class="col-lg-4 col-xlg-3 col-md-5">
-        <div class="card">
-            <div class="card-body">
-                <center class="m-t-30"> <img src="../assets/images/users/5.jpg" class="img-circle" width="150">
-                    <h4 class="card-title m-t-10">Rado</h4>
-                    <h6 class="card-subtitle">Directeur de réformes</h6>
-                </center>
-            </div>
-        <div class="card-body">
-            <div class="row text-center justify-content-md-center">
-                <div class="col-2"><a href="#" class="whatsapp"><i class="fa fa-whatsapp"></i></a></div>
-                <div class="col-2"><a href="#" class="facebook"><i class="fa fa-facebook"></i></a></div>
-                <div class="col-2"> <a href="#" class="gmail"><i class="fa fa-envelope"></i></a></div>
-            </div>
-        </div>
-        </div>
+    <div class="d-flex no-block mb-3">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addPartiePrenanteModal">
+            <i class="fa fa-plus mr-2"></i> Insérer une Partie Prenante
+        </button>
     </div>
-     -->
-    <!-- Column -->
+    @include('partiePrenante.ajoutPartiePrenante')
+
+    <div class="container">
+        <h2 class="text-center mb-4">Liste des Parties Prenantes</h2>
 
 
-    <div class="card">
-        <div class="card-body">
-            <div class="d-flex no-block">
-                <button type="button" class="btn waves-effect waves-light btn-rounded btn-primary" data-toggle="modal" data-target="#exampleModal">
-                    <i class=""></i> Ajouter un partie prenante
-                </button>
+        <!-- Formulaire de filtres -->
+        <form method="GET" action="{{ url()->current() }}">
+            <div class="row mb-4">
+                <!-- Filtre Projet -->
+                <div class="col-md-4 mb-3">
+                    <select name="projet_id" class="form-control">
+                        <option value="">Tous les projets</option>
+                        @foreach ($projets as $projet)
+                            <option value="{{ $projet->id }}" {{ request('projet_id') == $projet->id ? 'selected' : '' }}>
+                                {{ $projet->nom_projet }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
 
-            </div>
-            <div class="table-responsive m-t-20">
-                <table id="example23" class="tablesaw table-striped table-hover table-bordered table tablesaw-columntoggle" cellspacing="0" width="100%" role="grid" aria-describedby="example23_info" style="width: 100%;">
+                <!-- Filtre Entités -->
+                <div class="col-md-4 mb-3">
+                    <select name="entites[]" class="form-control" multiple size="5">
+                        @foreach ($entites as $entite)
+                            <option value="{{ $entite }}"
+                                {{ in_array($entite, request('entites', [])) ? 'selected' : '' }}>
+                                {{ $entite }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
 
+                <!-- Filtre Fonctions -->
+                <div class="col-md-4 mb-3">
+                    <select name="fonctions[]" class="form-control" multiple size="5">
+                        @foreach ($fonctions as $fonction)
+                            <option value="{{ $fonction }}"
+                                {{ in_array($fonction, request('fonctions', [])) ? 'selected' : '' }}>
+                                {{ $fonction }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
 
-
-                        <thead>
-                            <tr role="row">
-                                <th class="sorting_asc" tabindex="0" aria-controls="example23" rowspan="1" colspan="1" style="width: 135px;" aria-sort="ascending" aria-label="Office: activate to sort column ascending">Nom</th>
-                                <th class="sorting" tabindex="0" aria-controls="example23" rowspan="1" colspan="1" style="width: 66px;"  aria-label="Age: activate to sort column ascending">Acronyme</th>
-                                <th class="sorting" tabindex="0" aria-controls="example23" rowspan="1" colspan="1" style="width: 117px;"  aria-label="Start date: activate to sort column ascending">Type</th>
-                                <th class="sorting" tabindex="0" aria-controls="example23" rowspan="1" colspan="1" style="width: 117px;"  aria-label="Start date: activate to sort column ascending">Contact</th>
-                                <th class="sorting" tabindex="0" aria-controls="example23" rowspan="1" colspan="1" style="width: 117px;" aria-label="Start date: activate to sort column ascending">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($partiePrenante as $partie)
-                            <tr class=" align-items-center">
-
-                                    <td>{{$partie->Nom_partie}}</td>
-                                    <td>{{$partie->Acronyme}}</td>
-                                    <td>{{$partie->Type}}</td>
-                                    <td>{{$partie->Contact}}</td>
-                                    <td class="text-center">
-                                        <div class="d-flex justify-content-center">
-                                            <form class=""  action="{{route('partiePrenante.show',$partie->id)}}" method="GET">
-                                                @csrf
-                                                @method('GET')
-                                                    <button type="submit" class="bt btn-primary mx-2">
-                                                        <i class="ti-eye"></i>
-                                                    </button>
-                                                </form>
-
-                                                    <form action="{{ route('partiePrenante.destroy', $partie->id) }}" method="POST" onsubmit="return confirmDeletion(event, this)">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="bt btn-danger mx-2">
-                                                            <i class="mdi mdi-delete-empty"></i>
-                                                        </button>
-                                                    </form>
-                                        </div>
-
-
-                                    </td>
-
-
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                <!-- Boutons -->
+                <div class="col-12 text-center">
+                    <button type="submit" class="btn btn-primary mr-2">
+                        <i class="fas fa-filter"></i> Appliquer
+                    </button>
+                    <a href="{{ url()->current() }}" class="btn btn-secondary">
+                        <i class="fas fa-sync-alt"></i> Réinitialiser
+                    </a>
                 </div>
             </div>
+        </form>
+
+
+        <!-- Tableau -->
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Projet</th>
+                        <th>Entité</th>
+                        <th>Fonction</th>
+                        <th>Nom</th>
+                        <th>Email</th>
+                        <th>Contact</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($pivotEntries as $entry)
+                        <tr>
+                            <td>{{ $entry->projet->nom_projet }}</td>
+                            <td>{{ $entry->partiePrenante->entite }}</td>
+                            <td>{{ $entry->fonction }}</td>
+                            <td>{{ $entry->nom_partie }}</td>
+                            <td>{{ $entry->email_partie ?? 'N/A' }}</td>
+                            <td>{{ $entry->contact_partie ?? 'N/A' }}</td>
+                            <td>
+                                <!-- Bouton de modification -->
+                                <button class="btn btn-warning" data-toggle="modal"
+                                    data-target="#editPartiePrenanteModal{{ $entry->id }}">
+                                    <i class="fa fa-edit"></i> Modifier
+                                </button>
+                                @include('partiePrenante.modifierPartiePrenante', ['entry' => $entry])
+
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="text-center">Aucun résultat trouvé</td>
+                        </tr>
+                    @endforelse
+
+                </tbody>
+            </table>
+
+        </div>
+
+
+
+        <!-- Pagination -->
+        <div class="d-flex justify-content-center mt-4">
+            {{ $pivotEntries->withQueryString()->links() }}
         </div>
     </div>
 
 
+    <style>
+        select[multiple] {
+            min-height: 150px;
+            padding: 5px 0;
+        }
 
+        select[multiple] option {
+            padding: 8px 12px;
+            border-bottom: 1px solid #eee;
+        }
 
-
-@include('partiePrenante.ajoutPartiePrenante')
-
+        select[multiple] option:checked {
+            background-color: #e3f2fd;
+            color: #1976d2;
+        }
+    </style>
 @endsection
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        @if(session('success'))
-            Swal.fire({
-                icon: 'success',
-                title: 'Succès',
-                text: '{{ session('success') }}',
-                timer: 3000,
-                showConfirmButton: 'fermer'
-            });
-        @elseif(session('error'))
-            Swal.fire({
-                icon: 'error',
-                title: 'Erreur',
-                text: '{{ session('error') }}',
-                timer: 3000,
-                showConfirmButton: 'fermer'
-            });
-        @endif
-    });
-    function confirmDeletion(event, form) {
-        event.preventDefault(); // Empêche la soumission par défaut du formulaire
-
-        Swal.fire({
-            title: 'Êtes-vous sûr ?',
-            text: "Vous ne pourrez pas annuler cette action.",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Oui, supprimer',
-            cancelButtonText: 'Annuler'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Si l'utilisateur confirme, soumettre le formulaire
-                form.submit();
-            }
-        });
-    }
-</script>
-

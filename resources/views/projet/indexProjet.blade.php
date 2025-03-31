@@ -23,11 +23,12 @@
     <div class="card">
         <div class="card-body">
             <div class="d-flex no-block mb-3">
-                <button type="button" class="btn waves-effect waves-light btn-rounded btn-primary" data-toggle="modal"
-                    data-target="#exampleModal">
-                    <i class=""></i> Insérer un nouveau projet
+                <button type="button" data-toggle="modal" data-target="#addProjetModal" class="btn btn-success">
+                    <i class="fa-duotone fa-solid fa-plus mr-2"></i>Insérer un nouveau projet
                 </button>
+                @include('projet.ajoutProjet')
             </div>
+
             <form method="GET" action="{{ route('projet.index') }}" class="mb-4">
                 <div class="row">
                     <!-- Filtre par chantier -->
@@ -95,11 +96,6 @@
                         <div class="ml-3">
                             <p><strong>Responsable : </strong>{{ $projet->lead->nom_lead }}</p>
                         </div>
-                        {{-- <div class="d-flex ml-3 mb-3">
-                            <div class="flex-fill mr-2"><strong>Date début : </strong> {{ $projet->date_debut_formatted }}
-                            </div>
-                            <div class="flex-fill "><strong>Date fin : </strong>{{ $projet->date_fin_formatted }}</div>
-                        </div> --}}
                         <div class="d-flex ml-3 mb-3">
                             <div class="flex-fill mr-2">
                                 <strong>Jours restants : </strong>
@@ -124,29 +120,48 @@
                                 {{ $projet->statut_projet }}
                             </span>
                             <div class="d-flex justify-content-center">
+
+                                <!-- Bouton Voir -->
                                 <form class="" action="{{ route('projet.show', $projet->id) }}" method="GET">
                                     @csrf
                                     @method('GET')
-                                    <button type="submit" class="bt btn-primary mx-2">
+                                    <button type="submit" class="btn btn-primary mx-2">
                                         <i class="ti-eye"></i>
                                     </button>
                                 </form>
 
-                                <button type="submit" class="bt btn-danger mx-2">
+
+
+                                <!-- Bouton Modifier -->
+                                <button type="button" class="btn btn-warning" data-toggle="modal"
+                                    data-target="#editProjetModal">
+                                    <i class="fa fa-edit mr-1"></i>
+                                </button>
+
+
+                                <!-- Bouton Supprimer -->
+                                <form id="delete-form-{{ $projet->id }}"
+                                    action="{{ route('projet.destroy', $projet->id) }}" method="POST"
+                                    style="display: none;">
+                                    @csrf
+                                    @method('DELETE')
+
+                                </form>
+                                <button class="btn btn-danger mx-2" onclick="confirmDelete({{ $projet->id }})">
                                     <i class="mdi mdi-delete-empty"></i>
                                 </button>
+
                             </div>
                         </div>
                     </div>
+                    @include('projet.modifierProjet')
                 @endforeach
+
             </div>
-
-
-
-
-
         </div>
     </div>
+
+
 
 
 
@@ -310,6 +325,25 @@
     </script>
 
 
-    {{--
-    @include('projet.ajoutProjet') --}}
+
+
+    {{-- confirmation suppression d'un projet --}}
+    <script>
+        function confirmDelete(projetId) {
+            Swal.fire({
+                title: 'Êtes-vous sûr de supprimer ce projet ?',
+                text: "Cette action est irréversible !",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Oui, supprimer !',
+                cancelButtonText: 'Annuler'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById(`delete-form-${projetId}`).submit();
+                }
+            });
+        }
+    </script>
 @endsection

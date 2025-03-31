@@ -17,11 +17,11 @@ return new class extends Migration
             $table->foreignId('lead_id')->constrained()->onDelete('cascade');
             $table->string('nom_projet');
             $table->text('objectifs');
-            $table->text('situation_actuelle');
-            $table->text('prochaines_etapes');
+            $table->text('situation_actuelle')->nullable();
+            $table->text('prochaines_etapes')->nullable();
             $table->decimal('taux_avancement', 5, 2)->default(0.00);
-            $table->date('date_debut');
-            $table->date('date_fin');
+            $table->date('date_debut')->nullable();
+            $table->date('date_fin')->nullable();
             $table->enum('statut_projet', ['En cours', 'Achevé', 'En retard'])->nullable()->default('En cours');
             $table->timestamp('created_at')->nullable()->useCurrent();
             $table->timestamp('updated_at')->useCurrentOnUpdate()->nullable()->useCurrent();

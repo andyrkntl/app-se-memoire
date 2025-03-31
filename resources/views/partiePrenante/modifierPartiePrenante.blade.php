@@ -1,83 +1,63 @@
-@extends('layouts.layouts')
-
-@section('content')
-    <div class="row page-titles">
-        <div class="col-md-5 col-8 align-self-center">
-            <h3 class="text-themecolor m-b-0 m-t-0">Partie Prenante</h3>
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
-                <li class="breadcrumb-item active">Partie Prenante</li>
-                <li class="breadcrumb-item active">Modifier une partie prenante</li>
-            </ol>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="card card-outline-success">
-                <div class="card-header">
-                    <h4 class="m-b-0 text-white">Modifier une partie prenante</h4>
-                </div>
-                <div class="card-body">
-                    <form action="{{ route('partiePrenante.update', $partieprenante->id) }}" method="POST"
-                        class="form-horizontal from-border">
-                        @csrf
-                        @method('PUT')
-                        <div class="form-body">
-                            <div class="form-group row">
-                                <label class="control-label text-right col-md-3">Nom Partie prenante</label>
-                                <div class="col-md-9">
-                                    <input type="text" name="Nom_partie" value="{{ $partieprenante->Nom_partie }}"
-                                        class="form-control">
-                                    <small class="form-control-feedback"> </small>
-                                </div>
-                            </div>
+<!-- Modal de modification -->
+<div class="modal fade" id="editPartiePrenanteModal{{ $entry->id }}" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Modifier la Partie Prenante</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ route('partiePrenante.update', $entry->partiePrenante->id) }}" method="POST">
+                    @csrf
+                    @method('PUT')
 
 
-                            <div class="form-group row">
-                                <label class="control-label text-right col-md-3">Acronyme</label>
-                                <div class="col-md-9">
-                                    <input type="text" name="Acronyme" value="{{ $partieprenante->Acronyme }}"
-                                        class="form-control">
-                                    <small class="form-control-feedback"> </small>
-                                </div>
-                            </div>
+                    <!-- Champ caché pour partie prenante -->
+                    <input type="hidden" name="partie_prenante_id" value="{{ $entry->partiePrenante->id }}">
 
-                            <div class="form-group row">
-                                <label class="control-label text-right col-md-3">Type</label>
-                                <div class="col-md-9">
-                                    <input type="text" name="Type" value="{{ $partieprenante->Type }}"
-                                        class="form-control">
-                                    <small class="form-control-feedback"> </small>
-                                </div>
-                            </div>
+                    <div class="form-group">
+                        <label>Projet</label>
+                        <select name="projet_id" class="form-control" required>
+                            @foreach ($projets as $projet)
+                                <option value="{{ $projet->id }}"
+                                    {{ $entry->projet->id == $projet->id ? 'selected' : '' }}>
+                                    {{ $projet->nom_projet }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
 
-                            <div class="form-group row">
-                                <label class="control-label text-right col-md-3">Contact</label>
-                                <div class="col-md-9">
-                                    <input type="text" name="Contact" value="{{ $partieprenante->Contact }}"
-                                        class="form-control">
-                                    <small class="form-control-feedback"> </small>
-                                </div>
-                            </div>
-
-                        </div>
-                        <div class="form-actions">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="row">
-                                        <div class="offset-sm-3 col-md-9">
-                                            <a href="{{ route('partiePrenante.index') }}"
-                                                class="btn btn-secondary">Fermer</a>
-                                            <button type="submit" class="btn btn-success">Enregistrer les
-                                                modifications</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                    </form>
-                </div>
+                    <div class="form-group">
+                        <label>Entité</label>
+                        <input type="text" class="form-control" name="entite"
+                            value="{{ $entry->partiePrenante->entite }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Fonction</label>
+                        <input type="text" class="form-control" name="fonction" value="{{ $entry->fonction }}"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label>Nom</label>
+                        <input type="text" class="form-control" name="nom_partie" value="{{ $entry->nom_partie }}"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" class="form-control" name="email_partie"
+                            value="{{ $entry->email_partie }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Contact</label>
+                        <input type="text" class="form-control" name="contact_partie"
+                            value="{{ $entry->contact_partie }}">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Enregistrer</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-@endsection
+</div>

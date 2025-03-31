@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Jalon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Projet;
 
 class jalonController extends Controller
 {
@@ -38,24 +39,19 @@ class jalonController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, Projet $projet)
     {
-
-        $validatedData = $request->validate([
-            'projet_id' => 'required|integer|exists:projets,id',
-            'Nom_jalon' => 'required|string|max:255',
-            'Description' => 'nullable|string|max:100',
-            'Statut_jalon' => 'nullable|string|in:En cours,Achevé,En retard',
+        $validated = $request->validate([
+            'projet_id' => 'required|exists:projets,id',
+            'nom_jalon' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'date_debut' => 'required|date',
+            'date_prevue' => 'required|date|after_or_equal:date_debut'
         ]);
 
-        // Insérer directement dans la table 'jalons' sans utiliser de modèle
-        $inserted = DB::table('jalons')->insert($validatedData);
+        Jalon::create($validated);
 
-        if ($inserted) {
-            return redirect()->route('jalon.index')->with('success', 'Jalon ajouté avec succès');
-        } else {
-            return back()->with('error', 'Une erreur est survenue lors de l’ajout du jalon.');
-        }
+        return redirect()->back()->with('success', 'Jalon créé avec succès !');
     }
 
 
@@ -63,12 +59,7 @@ class jalonController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Jalon $jalon)
-    {
-        return view('jalon.profilJalon', [
-            'jalon' => $jalon,
-        ]);
-    }
+    public function show(Projet $projet) {}
 
     /**
      * Show the form for editing the specified resource.
@@ -88,37 +79,17 @@ class jalonController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Jalon $jalon)
     {
-        try {
-            $jalon = Jalon::findOrFail($id);
+        $validated = $request->validate([
+            'nom_jalon' => 'required|string|max:255',
+            'description' => 'nullable|string'
+        ]);
 
-            // Log des données reçues
-            logger('Données du formulaire :', $request->all());
+        $jalon->update($validated);
 
-            $request->validate([
-                'Nom_jalon' => 'required|string|max:255',
-                'Statut_jalon' => 'required|string',
-                'Description' => 'nullable|string',
-                'projet_id' => 'nullable|integer|exists:projets,id',
-            ]);
-
-            $jalon->update([
-                'Nom_jalon' => $request->input('Nom_jalon'),
-                'Statut_jalon' => $request->input('Statut_jalon'),
-                'Description' => $request->input('Description'),
-                'projet_id' => $request->input('projet_id'),
-
-            ]);
-
-            return redirect()->route('jalon.index')->with('success', 'Jalon modifié avec succès !');
-        } catch (\Exception $e) {
-            logger('Erreur lors de la mise à jour du jalon :', ['message' => $e->getMessage()]);
-            return back()->withErrors('Une erreur est survenue lors de la mise à jour du jalon.');
-        }
+        return response()->json(['success' => true]);
     }
-
-
 
 
     /**
@@ -126,13 +97,21 @@ class jalonController extends Controller
      */
     public function destroy($id)
     {
+        // Trouver le jalon par son ID
         $jalon = Jalon::find($id);
 
-        if ($jalon) {
-            $jalon->delete();
-            return redirect()->route('jalon.index')->with('success', 'Jalon supprimé avec succès');
+        // Vérifier si le jalon existe
+        if (!$jalon) {
+            return redirect()->route('projet.show')->with('error', 'Jalon non trouvé');
         }
 
-        return redirect()->route('jalon.index')->with('error', 'Jalon introuvable');
+        // Supprimer toutes les activités liées au jalon
+        $jalon->activite()->delete();
+
+        // Supprimer le jalon
+        $jalon->delete();
+
+        // Retourner avec un message de succès
+        return redirect()->back()->with('success', 'Jalon et ses activités supprimés avec succès');
     }
 }

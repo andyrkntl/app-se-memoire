@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Activite;
 use App\Models\Jalon;
+use App\Models\Projet;
 use Carbon\Carbon;
 
 class ActiviteController extends Controller
@@ -51,25 +52,33 @@ class ActiviteController extends Controller
 
     public function store(Request $request)
     {
-        $activite = DB::table('activites')->insert([
-            'projet_id' => $request[('projet_id')],
-            'jalon_id' => $request[('jalon_id')],
-            'Nom_activite' => $request[('Nom_activite')],
-            'Description_activite' => $request[('Description_activite')],
-            'Statut_activite' => $request[('Statut_activite')],
-            'Valeur_cible' => $request[('Valeur_cible')],
-            'Valeur_actuel' => $request[('Valeur_actuel')],
-            'Date_debut' => $request[('Date_debut')],
-            'Date_fin' => $request[('Date_fin')],
-            'Prochaine_etape' => $request[('Prochaine_etape')],
-
+        $validated = $request->validate([
+            'jalon_id' => 'required|exists:jalons,id',
+            'nom_activite' => 'required|string|max:255',
+            'date_debut' => 'required|date',
+            'date_prevue' => 'required|date|after_or_equal:date_debut'
         ]);
 
-        if ($activite) {
-            return redirect()->route('activite.index');
-        }
-    }
+        $activite = Activite::create($validated + ['statut_activite' => 'En cours']);
 
+        return response()->json([
+            'success' => true,
+            'activity' => [
+                'id' => $activite->id,
+                'nom_activite' => $activite->nom_activite,
+                'date_debut_formatted' => $activite->date_debut_formatted,
+                'date_prevue_formatted' => $activite->date_prevue_formatted,
+                'date_fin_formatted' => $activite->date_fin_formatted,
+                'statut_activite' => $activite->statut_activite,
+                'color' => $activite->color, // Utilise l'accesseur du modèle
+                'raw_dates' => [ // Pour l'édition future
+                    'debut' => $activite->date_debut->format('Y-m-d'),
+                    'prevue' => $activite->date_prevue->format('Y-m-d'),
+                    'fin' => optional($activite->date_fin)->format('Y-m-d')
+                ]
+            ]
+        ]);
+    }
 
     /**
      * Display the specified resource.
@@ -123,13 +132,59 @@ class ActiviteController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Activite $activite)
+    public function destroy($id)
     {
-        if ($activite) {
-            $activite->delete();
-            return redirect()->route('activite.index')->with('success', 'Activité supprimée avec succès');
+        $activite = Activite::find($id);
+
+        if (!$activite) {
+            return redirect()->route('projets.index')->with('error', 'Activité non trouvée');
         }
 
-        return redirect()->route('activite.index')->with('error', 'Activité introuvable');
+        $activite->delete();
+
+        return redirect()->back()->with('success', 'Activité supprimée avec succès');
+    }
+
+    public function filter(Request $request, $projetId)
+    {
+
+        // Récupérer le projet avec ses jalons et activités
+        $projet = Projet::with(['jalon.activite'])->find($projetId);
+
+        if (!$projet) {
+            return redirect()->back()->withErrors('Projet non trouvé');
+        }
+
+        $statutActivite = $request->input('statut_activite');
+        $dateActivite = $request->input('date_activite');
+        $jalonId = $request->input('jalon_id');
+
+        // Filtrer les activités pour chaque jalon
+        foreach ($projet->jalon as $jalon) {
+            // Filtrage d'activités par statut
+            if (!empty($statutActivite)) {
+                $jalon->activite = $jalon->activite->where('statut_activite', $statutActivite);
+            }
+
+            // Filtrage d'activités par date
+            if (!empty($dateActivite)) {
+                $jalon->activite = $jalon->activite->sortBy(function ($activite) {
+                    return $activite->date_debut;
+                });
+
+                if ($dateActivite === 'desc') {
+                    $jalon->activite = $jalon->activite->reverse();
+                }
+            }
+
+            // Filtrage par id de jalon si nécessaire
+            if ($jalonId && $jalon->id != $jalonId) {
+                // Ne pas afficher ce jalon si l'id ne correspond pas
+                $jalon->activite = collect(); // Réinitialise les activités du jalon
+            }
+        }
+
+        // Retourner la vue avec le projet et les jalons/activités filtrées
+        return view('projet.profilProjet', compact('projet'));
     }
 }
