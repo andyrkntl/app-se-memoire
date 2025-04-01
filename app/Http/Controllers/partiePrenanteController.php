@@ -13,7 +13,6 @@ class partiePrenanteController extends Controller
     /**
      * Display a listing of the resource.
      */
-
     public function index(Request $request)
     {
         $query = ProjetPartiePrenante::query()->with(['projet', 'partiePrenante']);
@@ -43,22 +42,15 @@ class partiePrenanteController extends Controller
         $fonctions = ProjetPartiePrenante::distinct()->pluck('fonction');
         $projets = Projet::all();
 
-        return view('partiePrenante.indexPartiePrenante', compact('pivotEntries', 'entites', 'fonctions', 'projets'));
-    }
+        // Récupération des emails (nouveau code)
+        $emailQuery = clone $query;
+        $emails = $emailQuery->get()
+            ->pluck('email_partie')
+            ->filter()
+            ->unique()
+            ->implode('; ');
 
-
-
-
-
-
-
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('partiePrenante.ajoutPartiePrenante');
+        return view('partiePrenante.indexPartiePrenante', compact('pivotEntries', 'entites', 'fonctions', 'projets', 'emails'));
     }
 
     /**
@@ -83,83 +75,46 @@ class partiePrenanteController extends Controller
         return redirect()->back()->with('success', 'Partie prenante ajoutée avec succès !');
     }
 
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(PartiePrenante $partiePrenante)
-    {
-        return view('partiePrenante.profilPartiePrenante', [
-            'partiePrenante' => $partiePrenante,
-        ]);
-    }
-
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    // Affiche le formulaire de modification
+    public function edit($partiePrenanteId)
     {
-        $partieprenante = partieprenante::find($id);
+        // Récupère la partie prenante
+        $partiePrenante = PartiePrenante::findOrFail($partiePrenanteId);
 
-        if (!$partieprenante) {
-            return redirect()->route('partiePrenante.index')->with('error', 'activite introuvable');
+        // Récupère les données liées à cette partie prenante dans la table pivot
+        $pivotData = ProjetPartiePrenante::where('partie_prenante_id', $partiePrenanteId)->first();
+
+        if ($pivotData) {
+            // Récupère les informations du projet lié à cette partie prenante
+            $projet = $pivotData->projet; // C'est la relation qui récupère le projet
+
+            // Passe les données à la vue
+            return view('partiePrenante.editPartiePrenante', compact('partiePrenante', 'pivotData', 'projet'));
+        } else {
+            // Si aucune donnée de pivot n'est trouvée, on redirige vers la liste avec un message d'erreur
+            return redirect()->route('partiePrenante.index')->with('error', 'Aucune partie prenante associée à ce projet.');
         }
-
-        return view('partiePrenante.modifierPartiePrenante', compact('partieprenante'));
     }
 
 
-
-    /**
-     * Update the specified resource in storage.
-     */
+    // Méthode pour mettre à jour la partie prenante
     public function update(Request $request, $id)
     {
-        // Validation des données envoyées
-        $request->validate([
-            'projet_id' => 'required|exists:projets,id', // Validation du projet
-            'entite' => 'required|string|max:255',
-            'fonction' => 'required|string|max:255',
-            'nom_partie' => 'required|string|max:255',
-            'email_partie' => 'nullable|email|max:255',
-            'contact_partie' => 'nullable|string|max:255',
+        $pivotEntry = ProjetPartiePrenante::findOrFail($id);
+        $pivotEntry->update([
+            'fonction' => $request->fonction,
+            'nom_partie' => $request->nom_partie,
+            'email_partie' => $request->email_partie,
+            'contact_partie' => $request->contact_partie,
         ]);
 
-        // Trouver la partie prenante par son id
-        $partiePrenante = PartiePrenante::findOrFail($id);
-
-        // Mettre à jour l'entité de la partie prenante
-        $partiePrenante->update([
-            'entite' => $request->entite,
-        ]);
-
-        // Trouver l'entrée dans la table pivot en fonction des deux clés étrangères
-        $projetPartiePrenante = ProjetPartiePrenante::where('partie_prenante_id', $id)
-            ->where('projet_id', $request->projet_id)
-            ->first(); // Trouver l'association existante
-
-        if ($projetPartiePrenante) {
-            // Mettre à jour l'entrée pivot avec les nouvelles données
-            $projetPartiePrenante->update([
-                'fonction' => $request->fonction,
-                'nom_partie' => $request->nom_partie,
-                'email_partie' => $request->email_partie,
-                'contact_partie' => $request->contact_partie,
-            ]);
-        } else {
-            // Si aucune entrée pivot n'existe, en créer une
-            ProjetPartiePrenante::create([
-                'projet_id' => $request->projet_id,
-                'partie_prenante_id' => $partiePrenante->id,
-                'fonction' => $request->fonction,
-                'nom_partie' => $request->nom_partie,
-                'email_partie' => $request->email_partie,
-                'contact_partie' => $request->contact_partie,
-            ]);
-        }
-
-        return redirect()->route('partiePrenante.index')->with('success', 'Partie prenante et projet mis à jour avec succès!');
+        return redirect()->back()->with('success', 'Modification effectuée avec succès !');
     }
+
+
 
 
 
@@ -173,14 +128,12 @@ class partiePrenanteController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(PartiePrenante $partiePrenante)
+    public function destroy($id)
     {
+        $pivotEntry = ProjetPartiePrenante::findOrFail($id);
+        $pivotEntry->delete();
 
-        $partiePrenante->delete();
-        if ($partiePrenante) {
-            return redirect()->route('partiePrenante.index')->with('success', 'partie prenante supprimé avec succès!');
-        } else {
-            return back()->with('error', 'Échec du suppression du partie prenante. Veuillez réessayer.');
-        }
+        return redirect()->back()
+            ->with('success', 'La partie prenante a été supprimée avec succès !');
     }
 }

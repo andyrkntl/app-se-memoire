@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Models\Activite;
 use App\Models\Jalon;
 use App\Models\Projet;
@@ -11,45 +10,6 @@ use Carbon\Carbon;
 
 class ActiviteController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        $projet = DB::table('projets')->get();
-        $jalon = DB::table('jalons')->get();
-        $partie = DB::table('partie_prenantes')->get();
-        $activite = DB::table('activites')
-            ->join('jalons', 'jalons.id', '=', 'activites.jalon_id')
-            ->join('projets', 'projets.id', '=', 'activites.projet_id')
-            ->leftJoin('leads', 'leads.id', '=', 'projets.lead_id') // Jointure avec la table leads
-            ->join('partie_prenantes', 'partie_prenantes.id', '=', 'projets.partiePrenante_id') // Jointure avec la table partie_prenantes
-            ->leftJoin('chantiers', 'chantiers.id', '=', 'projets.chantier_id')
-            ->select('jalons.*', 'leads.*', 'partie_prenantes.*', 'chantiers.*', 'projets.*', 'activites.*')
-            ->get();
-
-        if ($activite) {
-            return view('activite.indexActivite', [
-                'activite' => $activite,
-                'projet' => $projet,
-                'jalon' => $jalon,
-                'partie' => $partie
-            ]);
-        }
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('activite.ajoutActivite');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-
     public function store(Request $request)
     {
         $validated = $request->validate([

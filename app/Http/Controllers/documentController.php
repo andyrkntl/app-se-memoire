@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Document;
 use App\Models\Projet;
+use Illuminate\Support\Facades\Storage;
 
 class DocumentController extends Controller
 {
@@ -61,5 +62,28 @@ class DocumentController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Document ajouté avec succès.');
+    }
+
+    //modification document
+    public function update(Request $request, Document $document)
+    {
+        $validated = $request->validate([
+            'nom_docs' => 'required|string|max:255',
+            'type_docs' => 'required|in:rapport,fiche de présence,livrable,compte rendu,manuel,autres'
+        ]);
+
+        $document->update($validated);
+
+        return redirect()->route('document.index', $document->projet_id)
+            ->with('success', 'Document modifié avec succès');
+    }
+
+    //suppression document
+    public function destroy(Document $document)
+    {
+        Storage::delete($document->file_path);
+        $document->delete();
+
+        return redirect()->back()->with('success', 'Document supprimé avec succès');
     }
 }

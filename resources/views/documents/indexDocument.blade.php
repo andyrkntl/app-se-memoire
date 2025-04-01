@@ -77,6 +77,8 @@
                             <!-- Bouton réinitialiser -->
                             <a href="{{ route('document.index', $projet->id) }}"
                                 class="btn btn-secondary w-100">Réinitialiser</a>
+
+
                         </div>
                     </div>
                 </form>
@@ -106,7 +108,7 @@
                                                 class="badge badge-light border text-dark py-2 px-3">{{ $document->type_docs }}</span>
                                         </td>
                                         <td class="align-middle">
-                                            <div class="d-flex flex-nowrap justify-content-end gap-2">
+                                            <div class="d-flex flex-nowrap justify-content-start gap-2">
                                                 <a href="{{ asset('storage/' . $document->file_path) }}" target="_blank"
                                                     class="btn btn-outline-secondary btn-sm flex-grow-1 flex-md-grow-0 mr-2">
                                                     <i class="bi bi-file-earmark-arrow-down mr-1"></i> Consulter
@@ -116,9 +118,27 @@
                                                     class="btn btn-outline-primary btn-sm flex-grow-1 flex-md-grow-0">
                                                     <i class="bi bi-download mr-1"></i> Télécharger
                                                 </a>
+                                                {{-- bouton modifier --}}
+                                                <button type="button" class="btn btn-outline-warning btn-sm ml-2"
+                                                    data-toggle="modal" data-target="#editModal{{ $document->id }}">
+                                                    <i class="fa fa-edit"></i>
+                                                </button>
+
+                                                {{-- bouton supprimer --}}
+                                                <form method="POST"
+                                                    action="{{ route('document.destroy', $document->id) }}"
+                                                    class="d-inline ml-2" id="deleteForm{{ $document->id }}">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="button" class="btn btn-outline-danger btn-sm"
+                                                        onclick="confirmDelete({{ $document->id }})">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </form>
                                             </div>
                                         </td>
                                     </tr>
+                                    @include('documents.modifierDocument')
                                 @endforeach
                             </tbody>
                         </table>
@@ -132,6 +152,37 @@
             </div>
         </div>
     </div>
+
+
+
+
+
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        function confirmDelete(documentId) {
+            Swal.fire({
+                title: 'Êtes-vous sûr ?',
+                text: "Cette action est irréversible !",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Oui, supprimer !',
+                cancelButtonText: 'Annuler'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('deleteForm' + documentId).submit();
+                }
+            });
+        }
+    </script>
+
+
 
 
 

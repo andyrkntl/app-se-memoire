@@ -130,14 +130,14 @@
                                     </button>
                                 </form>
 
-
-
                                 <!-- Bouton Modifier -->
-                                <button type="button" class="btn btn-warning" data-toggle="modal"
-                                    data-target="#editProjetModal">
+                                <button type="button" class="btn btn-warning edit-projet-btn" data-toggle="modal"
+                                    data-target="#editProjetModal" data-projet-id="{{ $projet->id }}"
+                                    data-nom-projet="{{ $projet->nom_projet }}" data-objectifs="{{ $projet->objectifs }}"
+                                    data-date-debut="{{ $projet->date_debut }}" data-date-fin="{{ $projet->date_fin }}"
+                                    data-chantier-id="{{ $projet->chantier_id }}" data-lead-id="{{ $projet->lead_id }}">
                                     <i class="fa fa-edit mr-1"></i>
                                 </button>
-
 
                                 <!-- Bouton Supprimer -->
                                 <form id="delete-form-{{ $projet->id }}"
@@ -145,23 +145,18 @@
                                     style="display: none;">
                                     @csrf
                                     @method('DELETE')
-
                                 </form>
                                 <button class="btn btn-danger mx-2" onclick="confirmDelete({{ $projet->id }})">
                                     <i class="mdi mdi-delete-empty"></i>
                                 </button>
-
                             </div>
                         </div>
                     </div>
-                    @include('projet.modifierProjet')
                 @endforeach
-
             </div>
         </div>
     </div>
-
-
+    @include('projet.modifierProjet')
 
 
 

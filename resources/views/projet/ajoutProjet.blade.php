@@ -1,5 +1,4 @@
 <!-- Modal -->
-<!-- Modal -->
 <div class="modal fade" id="addProjetModal" tabindex="-1" role="dialog" aria-labelledby="addProjetModalLabel"
     aria-hidden="true">
     <div class="modal-dialog" role="document">
