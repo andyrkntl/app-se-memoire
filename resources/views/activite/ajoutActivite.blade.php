@@ -17,6 +17,21 @@
              <div class="col-md-3 mb-3">
                  <input type="date" name="date_prevue" class="form-control form-control-sm" required>
              </div>
+             <div class="form-row">
+                 <div class="col-md-4 mb-3">
+                     <input type="text" name="lieu_reunion" class="form-control form-control-sm"
+                         placeholder="Lieu de la réunion">
+                 </div>
+                 <div class="col-md-3 mb-3">
+                     <input type="time" name="heure_reunion" class="form-control form-control-sm"
+                         placeholder="Heure">
+                 </div>
+                 <div class="col-md-5 mb-3">
+                     <input type="text" name="description_reunion" class="form-control form-control-sm"
+                         placeholder="Description">
+                 </div>
+             </div>
+
 
              <div class="col-md-2 mb-3">
                  <button type="submit" class="btn btn-sm btn-success btn-block">
@@ -109,6 +124,15 @@
                             ${activity.date_prevue_formatted}
                             | Fin : ${activity.date_fin_formatted || 'Non définie'}
                         </small>
+                        <small>
+                            📅 ${activity.date_debut_formatted} → ${activity.date_prevue_formatted}
+                            | Fin : ${activity.date_fin_formatted || 'Non définie'}
+                            <br>
+                            📍 ${activity.lieu_reunion || 'Non défini'} à ${activity.heure_reunion || '--:--'}
+                            <br>
+                            📝 ${activity.description_reunion || 'Aucune description'}
+                        </small>
+
                     </div>
                     <div class="d-flex align-items-center">
                         <span class="badge mr-2" style="color: white; background-color: ${activity.color}">
@@ -122,6 +146,9 @@
                                 data-debut="${activity.raw_dates.debut}"
                                 data-prevue="${activity.raw_dates.prevue}"
                                 data-fin="${activity.raw_dates.fin || ''}"
+                                data-lieu="${activity.lieu_reunion || ''}"
+                                data-heure="${activity.heure_reunion || ''}"
+                                data-description="${activity.description_reunion || ''}"
                                 data-statut="${activity.statut_activite}">
                             <i class="bi bi-pencil"></i>
                         </button>

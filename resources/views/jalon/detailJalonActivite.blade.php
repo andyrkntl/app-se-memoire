@@ -209,56 +209,77 @@
 
                             <ul class="list-group">
                                 @foreach ($jalon->activite as $activite)
-                                    <li class="list-group-item d-flex justify-content-between align-items-center"
-                                        data-activity-id="{{ $activite->id }}">
-                                        <div class="flex-grow-1">
-                                            <strong>{{ $activite->nom_activite }}</strong>
-                                            <br>
-                                            <small>
-                                                📅 {{ $activite->date_debut_formatted }} →
-                                                {{ $activite->date_prevue_formatted }}
-                                                | Fin : {{ $activite->date_fin_formatted ?? 'Non définie' }}
-                                            </small>
+                                    <li class="list-group-item p-0" data-activity-id="{{ $activite->id }}">
+                                        <!-- Titre cliquable -->
+                                        <div class="d-flex justify-content-between align-items-center p-3"
+                                            data-toggle="collapse" href="#collapseActivite{{ $activite->id }}"
+                                            role="button" aria-expanded="false"
+                                            aria-controls="collapseActivite{{ $activite->id }}">
+                                            <div class="flex-grow-1">
+                                                <strong>{{ $activite->nom_activite }}</strong><br>
+                                                <small>
+                                                    📅 {{ $activite->date_debut_formatted }} →
+                                                    {{ $activite->date_prevue_formatted }}
+                                                    | Fin : {{ $activite->date_fin_formatted ?? 'Non définie' }}
+                                                </small>
+                                            </div>
+
+                                            <div class="d-flex align-items-center">
+                                                <span class="badge mr-2"
+                                                    style="color: white; background-color: {{ $activite->color }}">
+                                                    {{ $activite->statut_activite }}
+                                                </span>
+
+                                                <button class="btn btn-sm btn-outline-primary mr-2 edit-activity"
+                                                    data-toggle="modal" data-target="#editActivityModal"
+                                                    data-id="{{ $activite->id }}"
+                                                    data-nom="{{ $activite->nom_activite }}"
+                                                    data-debut="{{ $activite->date_debut_formatted }}"
+                                                    data-prevue="{{ $activite->date_prevue_formatted }}"
+                                                    data-fin="{{ $activite->date_fin_formatted }}"
+                                                    data-statut="{{ $activite->statut_activite }}"
+                                                    data-lieu="{{ $activite->lieu_reunion }}"
+                                                    data-heure="{{ $activite->heure_reunion }}"
+                                                    data-description="{{ $activite->description_reunion }}">
+                                                    <i class="bi bi-pencil"></i>
+                                                </button>
+
+                                                <button class="btn btn-sm btn-outline-danger delete-activity-btn"
+                                                    data-activite-id="{{ $activite->id }}">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div class="d-flex align-items-center">
-                                            <span class="badge mr-2"
-                                                style="color: white; background-color: {{ $activite->color }}">
-                                                {{ $activite->statut_activite }}
-                                            </span>
 
-                                            {{-- bouton de modification activite --}}
-                                            <button class="btn btn-sm btn-outline-primary mr-2 edit-activity"
-                                                data-toggle="modal" data-target="#editActivityModal"
-                                                data-id="{{ $activite->id }}"
-                                                data-nom="{{ $activite->nom_activite }}"
-                                                data-debut="{{ $activite->date_debut_formatted }}"
-                                                data-prevue="{{ $activite->date_prevue_formatted }}"
-                                                data-fin="{{ $activite->date_fin_formatted ?? '' }}"
-                                                data-statut="{{ $activite->statut_activite }}">
-                                                <i class="bi bi-pencil"></i>
-                                            </button>
-                                            {{-- bouton de suppression activite --}}
-                                            <button class="btn btn-sm btn-outline-danger delete-activity-btn"
-                                                data-activite-id="{{ $activite->id }}">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-
+                                        <!-- Détails cachés -->
+                                        <div class="collapse px-3 pb-3" id="collapseActivite{{ $activite->id }}">
+                                            @if ($activite->lieu_reunion)
+                                                📍 {{ $activite->lieu_reunion }}<br>
+                                            @endif
+                                            @if ($activite->heure_reunion)
+                                                🕒{{ \Carbon\Carbon::parse($activite->heure_reunion)->format('H:i') }}<br>
+                                            @endif
+                                            @if ($activite->description_reunion)
+                                                📝{{ $activite->description_reunion }}<br>
+                                            @endif
                                         </div>
                                     </li>
                                 @endforeach
+                            </ul>
 
-                                {{-- list ajout d'une nouvelle activite --}}
-                                <li class="list-group-item p-0 border-0">
-                                    <div class="add-activity-container">
-                                        <!-- Élément déclencheur -->
-                                        <div class="clickable-add-activity px-3 py-2"
-                                            data-jalon-id="{{ $jalon->id }}"
-                                            style="cursor: pointer; background-color: #f8f9fa;">
-                                            <i class="bi bi-plus-circle"></i> Ajouter une activité...
-                                        </div>
-                                        @include('activite.ajoutActivite')
+
+
+                            {{-- list ajout d'une nouvelle activite --}}
+                            <li class="list-group-item p-0 border-0">
+                                <div class="add-activity-container">
+                                    <!-- Élément déclencheur -->
+                                    <div class="clickable-add-activity px-3 py-2" data-jalon-id="{{ $jalon->id }}"
+                                        style="cursor: pointer; background-color: #f8f9fa;">
+                                        <i class="bi bi-plus-circle"></i> Ajouter une activité...
                                     </div>
-                                </li>
+                                    @include('activite.ajoutActivite')
+                                </div>
+                            </li>
                             </ul>
                         </div>
                     </div>

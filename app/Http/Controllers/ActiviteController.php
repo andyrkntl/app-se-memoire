@@ -16,8 +16,12 @@ class ActiviteController extends Controller
             'jalon_id' => 'required|exists:jalons,id',
             'nom_activite' => 'required|string|max:255',
             'date_debut' => 'required|date',
-            'date_prevue' => 'required|date|after_or_equal:date_debut'
+            'date_prevue' => 'required|date|after_or_equal:date_debut',
+            'lieu_reunion' => 'nullable|string|max:255',
+            'heure_reunion' => 'nullable|date_format:H:i',
+            'description_reunion' => 'nullable|string',
         ]);
+
 
         $activite = Activite::create($validated + ['statut_activite' => 'En cours']);
 
@@ -30,6 +34,9 @@ class ActiviteController extends Controller
                 'date_prevue_formatted' => $activite->date_prevue_formatted,
                 'date_fin_formatted' => $activite->date_fin_formatted,
                 'statut_activite' => $activite->statut_activite,
+                'lieu_reunion' => $activite->lieu_reunion,
+                'heure_reunion' => optional($activite->heure_reunion)->format('H:i'),
+                'description_reunion' => $activite->description_reunion,
                 'color' => $activite->color, // Utilise l'accesseur du modèle
                 'raw_dates' => [ // Pour l'édition future
                     'debut' => $activite->date_debut->format('Y-m-d'),
@@ -67,7 +74,10 @@ class ActiviteController extends Controller
             'date_debut' => 'required|date_format:d/m/Y',
             'date_prevue' => 'required|date_format:d/m/Y|after_or_equal:date_debut',
             'date_fin' => 'nullable|date_format:d/m/Y|after_or_equal:date_debut',
-            'statut_activite' => 'required|in:En cours,Achevé,En retard'
+            'statut_activite' => 'required|in:En cours,Achevé,En retard',
+            'lieu_reunion' => 'nullable|string|max:255',
+            'heure_reunion' => 'nullable|date_format:H:i',
+            'description_reunion' => 'nullable|string',
         ]);
 
         try {
@@ -78,7 +88,10 @@ class ActiviteController extends Controller
                 'date_fin' => $validated['date_fin']
                     ? Carbon::createFromFormat('d/m/Y', $validated['date_fin'])
                     : null,
-                'statut_activite' => $validated['statut_activite']
+                'statut_activite' => $validated['statut_activite'],
+                'lieu_reunion' => $validated['lieu_reunion'],
+                'heure_reunion' => $validated['heure_reunion'],
+                'description_reunion' => $validated['description_reunion'],
             ]);
         } catch (\Exception $e) {
             return response()->json([

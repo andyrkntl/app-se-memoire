@@ -19,7 +19,9 @@ class Activite extends Model
         'date_prevue',
         'date_fin',
         'statut_activite',
-
+        'lieu_reunion',
+        'heure_reunion',
+        'description_reunion',
     ];
 
     public function jalon()
@@ -53,10 +55,13 @@ class Activite extends Model
         return $this->date_fin ? Carbon::parse($this->date_fin)->format('d/m/Y') : '';
     }
 
+
+
     protected $casts = [
         'date_debut' => 'datetime',
         'date_prevue' => 'datetime',
         'date_fin' => 'datetime',
+
     ];
 
 

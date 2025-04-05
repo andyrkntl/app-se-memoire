@@ -35,6 +35,22 @@
                     </div>
 
                     <div class="form-group">
+                        <label>Lieu de la réunion</label>
+                        <input type="text" name="lieu_reunion" id="editLieuReunion" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Heure de la réunion</label>
+                        <input type="time" name="heure_reunion" id="editHeureReunion" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Description de la réunion</label>
+                        <textarea name="description_reunion" id="editDescriptionReunion" class="form-control" rows="3"></textarea>
+                    </div>
+
+
+                    <div class="form-group">
                         <label>Statut</label>
                         <select name="statut_activite" id="editStatut" class="form-control" required>
                             <option value="En cours">En cours</option>
@@ -55,6 +71,13 @@
 
 
 <script>
+    function toFormattedTime(timeString) {
+        const date = new Date(`2025-01-01T${timeString}`);
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${hours}:${minutes}`;
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         // Conversion d/m/Y => Y-m-d
         const toIsoDate = (dateString) => {
@@ -80,6 +103,10 @@
             $('#editPrevue').val(toIsoDate($btn.data('prevue')));
             $('#editFin').val(toIsoDate($btn.data('fin')));
             $('#editStatut').val($btn.data('statut'));
+            $('#editLieuReunion').val($btn.data('lieu'));
+            $('#editHeureReunion').val($btn.data('heure'));
+            $('#editDescriptionReunion').val($btn.data('description'));
+
         });
 
         // Soumission
@@ -91,6 +118,9 @@
                 date_debut: toFormattedDate($('#editDebut').val()),
                 date_prevue: toFormattedDate($('#editPrevue').val()),
                 date_fin: toFormattedDate($('#editFin').val()),
+                lieu_reunion: $('#editLieuReunion').val(),
+                heure_reunion: toFormattedTime($('#editHeureReunion').val()),
+                description_reunion: $('#editDescriptionReunion').val(),
                 statut_activite: $('#editStatut').val(),
                 _token: $('input[name="_token"]').val(),
                 _method: 'PUT'
