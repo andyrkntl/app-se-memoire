@@ -128,7 +128,7 @@
                         </li> --}}
 
                         <li>
-                            <a class="waves-effect waves-dark" href="#">
+                            <a class="waves-effect waves-dark" href="{{ url('/agenda') }}">
                                 <i class="fa-sharp-duotone fa-regular fa-calendar-days"></i>
                                 <span class="preview">Agenda</span>
                             </a>

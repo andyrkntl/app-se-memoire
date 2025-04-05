@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\PartiePrenanteController;
-
+use App\Http\Controllers\GoogleCalendarController;
 
 
 Auth::routes();
@@ -45,3 +45,16 @@ Route::post('/documents', [DocumentController::class, 'store'])->name('document.
 Route::get('/projets/{projet}/documents', [DocumentController::class, 'index'])->name('document.index');
 Route::put('/documents/{document}', [DocumentController::class, 'update'])->name('document.update');
 Route::delete('/documents/{document}', [DocumentController::class, 'destroy'])->name('document.destroy');
+
+
+
+
+Route::get('/agenda', function () {
+    return view('agenda.googleAgenda');
+});
+
+
+
+Route::get('/google/redirect', [GoogleCalendarController::class, 'redirectToGoogle'])->name('google.redirect');
+Route::get('/google/callback', [GoogleCalendarController::class, 'handleGoogleCallback']);
+Route::get('/google/events', [GoogleCalendarController::class, 'listEvents'])->name('agenda.events');
