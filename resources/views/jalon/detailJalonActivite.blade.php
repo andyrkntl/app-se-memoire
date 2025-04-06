@@ -12,6 +12,21 @@
     @include('jalon.ajoutJalon') <!-- Ajoutez cette ligne -->
 
 
+    @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
+
 
     @foreach ($projet->jalon as $jalon)
         <div class="card mb-3">
@@ -248,6 +263,19 @@
                                                     data-activite-id="{{ $activite->id }}">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
+
+                                                <form action="{{ route('activites.googlecalendar', $activite->id) }}"
+                                                    method="POST" style="display:inline;">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-sm btn-outline-success">
+                                                        <i class="bi bi-calendar-plus"></i> Google Agenda
+                                                    </button>
+                                                </form>
+
+
+
+
+
                                             </div>
                                         </div>
 
@@ -482,5 +510,36 @@
     });
 </script>
 
+
+
+
+{{-- ajout activite au google calendar --}}
+<script>
+    document.querySelectorAll('.add-to-calendar-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const activiteId = this.dataset.activiteId;
+
+            fetch(`/activites/${activiteId}/add-to-calendar`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Événement ajouté à Google Calendar ✅');
+                    } else {
+                        alert('Erreur : ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert('Erreur lors de l’ajout à Google Calendar.');
+                });
+        });
+    });
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

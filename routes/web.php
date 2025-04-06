@@ -53,8 +53,7 @@ Route::get('/agenda', function () {
     return view('agenda.googleAgenda');
 });
 
-
-
 Route::get('/google/redirect', [GoogleCalendarController::class, 'redirectToGoogle'])->name('google.redirect');
 Route::get('/google/callback', [GoogleCalendarController::class, 'handleGoogleCallback']);
 Route::get('/google/events', [GoogleCalendarController::class, 'listEvents'])->name('agenda.events');
+Route::post('/activites/{id}/add-to-google-calendar', [GoogleCalendarController::class, 'addToGoogleCalendar'])->name('activites.googlecalendar');
