@@ -3,11 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Activite;
-use Illuminate\Http\Request;
-use Google\Service\Calendar;
-use Google\Service\Calendar\Event;
 use Carbon\Carbon;
-use Google\Service\Calendar\EventDateTime;
 use Illuminate\Support\Facades\Log;
 
 
@@ -212,26 +208,47 @@ class GoogleCalendarController extends Controller
             }
 
             $service = new \Google\Service\Calendar($client);
-
             $datePart = Carbon::parse($activite->date_debut)->format('Y-m-d');
-            $startDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $datePart . ' ' . $activite->heure_reunion, 'Africa/Nairobi');
-            $endDateTime = $startDateTime->copy()->addHour();
 
-            Log::info(" Création de l'événement entre {$startDateTime->toDateTimeString()} et {$endDateTime->toDateTimeString()}");
+            if (!empty($activite->heure_reunion)) {
+                // Cas avec heure
+                $startDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $datePart . ' ' . $activite->heure_reunion, 'Africa/Nairobi');
+                $endDateTime = $startDateTime->copy()->addHour();
 
-            $event = new \Google\Service\Calendar\Event([
-                'summary' => $activite->nom_activite,
-                'location' => $activite->lieu_reunion,
-                'description' => $activite->description_reunion,
-                'start' => [
-                    'dateTime' => $startDateTime->toRfc3339String(),
-                    'timeZone' => 'Africa/Nairobi',
-                ],
-                'end' => [
-                    'dateTime' => $endDateTime->toRfc3339String(),
-                    'timeZone' => 'Africa/Nairobi',
-                ],
-            ]);
+                Log::info(" Création de l'événement entre {$startDateTime->toDateTimeString()} et {$endDateTime->toDateTimeString()}");
+
+                $event = new \Google\Service\Calendar\Event([
+                    'summary' => $activite->nom_activite,
+                    'location' => $activite->lieu_reunion,
+                    'description' => $activite->description_reunion,
+                    'start' => [
+                        'dateTime' => $startDateTime->toRfc3339String(),
+                        'timeZone' => 'Africa/Nairobi',
+                    ],
+                    'end' => [
+                        'dateTime' => $endDateTime->toRfc3339String(),
+                        'timeZone' => 'Africa/Nairobi',
+                    ],
+                ]);
+            } else {
+                // Cas sans heure => événement de type "All-day"
+                Log::info(" Création d'un événement sans heure, pour la date : $datePart");
+
+                $event = new \Google\Service\Calendar\Event([
+                    'summary' => $activite->nom_activite,
+                    'location' => $activite->lieu_reunion,
+                    'description' => $activite->description_reunion,
+                    'start' => [
+                        'date' => $datePart,
+                        'timeZone' => 'Africa/Nairobi',
+                    ],
+                    'end' => [
+                        // Les événements "All-day" doivent durer au moins 1 jour.
+                        'date' => Carbon::parse($datePart)->addDay()->format('Y-m-d'),
+                        'timeZone' => 'Africa/Nairobi',
+                    ],
+                ]);
+            }
 
             Log::info("Envoi de l'événement à Google Calendar...");
             $createdEvent = $service->events->insert('primary', $event);

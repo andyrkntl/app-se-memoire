@@ -259,7 +259,7 @@
                                                     <i class="bi bi-pencil"></i>
                                                 </button>
 
-                                                <button class="btn btn-sm btn-outline-danger delete-activity-btn"
+                                                <button class="btn btn-sm btn-outline-danger delete-activity-btn mr-2"
                                                     data-activite-id="{{ $activite->id }}">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
@@ -268,14 +268,9 @@
                                                     method="POST" style="display:inline;">
                                                     @csrf
                                                     <button type="submit" class="btn btn-sm btn-outline-success">
-                                                        <i class="bi bi-calendar-plus"></i> Google Agenda
+                                                        <i class="bi bi-calendar-plus"></i> Agenda
                                                     </button>
                                                 </form>
-
-
-
-
-
                                             </div>
                                         </div>
 
@@ -529,7 +524,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('Événement ajouté à Google Calendar ✅');
+                        alert('Événement ajouté à Google Calendar');
                     } else {
                         alert('Erreur : ' + data.message);
                     }

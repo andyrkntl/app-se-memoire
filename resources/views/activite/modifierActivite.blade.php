@@ -119,7 +119,8 @@
                 date_prevue: toFormattedDate($('#editPrevue').val()),
                 date_fin: toFormattedDate($('#editFin').val()),
                 lieu_reunion: $('#editLieuReunion').val(),
-                heure_reunion: toFormattedTime($('#editHeureReunion').val()),
+                heure_reunion: $('#editHeureReunion').val() ? toFormattedTime($('#editHeureReunion')
+                    .val()) : null,
                 description_reunion: $('#editDescriptionReunion').val(),
                 statut_activite: $('#editStatut').val(),
                 _token: $('input[name="_token"]').val(),

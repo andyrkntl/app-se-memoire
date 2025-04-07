@@ -70,6 +70,8 @@ class ActiviteController extends Controller
      */
     public function update(Request $request, Activite $activite)
     {
+
+
         $validated = $request->validate([
             'nom_activite' => 'required|string|max:255',
             'date_debut' => 'required|date_format:d/m/Y',
@@ -82,17 +84,18 @@ class ActiviteController extends Controller
         ]);
 
         try {
+            // Convertir les dates "d/m/Y" en objets Carbon
             $activite->update([
                 'nom_activite' => $validated['nom_activite'],
                 'date_debut' => Carbon::createFromFormat('d/m/Y', $validated['date_debut']),
                 'date_prevue' => Carbon::createFromFormat('d/m/Y', $validated['date_prevue']),
-                'date_fin' => $validated['date_fin']
+                'date_fin' => isset($validated['date_fin'])
                     ? Carbon::createFromFormat('d/m/Y', $validated['date_fin'])
                     : null,
                 'statut_activite' => $validated['statut_activite'],
-                'lieu_reunion' => $validated['lieu_reunion'],
-                'heure_reunion' => $validated['heure_reunion'],
-                'description_reunion' => $validated['description_reunion'],
+                'lieu_reunion' => $validated['lieu_reunion'] ?? null,
+                'heure_reunion' => $validated['heure_reunion'] ?? null, // Pas de conversion Carbon
+                'description_reunion' => $validated['description_reunion'] ?? null,
             ]);
         } catch (\Exception $e) {
             return response()->json([
