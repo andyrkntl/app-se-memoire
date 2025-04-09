@@ -77,7 +77,7 @@ class Activite extends Model
         }
 
         // Si l'activité n'est pas achevée et que la date prévue est dépassée, elle est en retard
-        if ($value !== 'Achevé' && Carbon::now()->greaterThan($this->date_prevue)) {
+        if ($value !== 'Achevé' && Carbon::now()->greaterThan($this->date_prevue->endOfDay())) {
             $this->attributes['statut_activite'] = 'En retard';
         }
     }
@@ -110,5 +110,30 @@ class Activite extends Model
         static::updated(function ($activite) {
             $activite->jalon->updateJalonProgress();
         });
+    }
+
+
+    public static function getNotifications()
+    {
+        $now = Carbon::now();
+        $today = $now->copy()->startOfDay(); // Pour comparer juste la date du jour
+        $in15Days = $now->copy()->addDays(15);
+        $in7Days = $now->copy()->addDays(7);
+        $in3Days = $now->copy()->addDays(3);
+        $in1Day = $now->copy()->addDay();
+
+        return self::where(function ($query) use ($now, $today, $in15Days, $in7Days, $in3Days, $in1Day) {
+            $query->where('statut_activite', '!=', 'Achevé')
+                ->where(function ($subquery) use ($now, $today, $in15Days, $in7Days, $in3Days, $in1Day) {
+                    $subquery->whereDate('date_prevue', '<', $now) // en retard
+                        ->orWhereDate('date_prevue', '=', $today) // jour J (aujourd'hui)
+                        ->orWhereDate('date_prevue', '=', $in15Days) // 15 jours avant
+                        ->orWhereDate('date_prevue', '=', $in7Days)  // 7 jours avant
+                        ->orWhereDate('date_prevue', '=', $in3Days)  // 3 jours avant
+                        ->orWhereDate('date_prevue', '=', $in1Day); // 1 jour avant
+                });
+        })
+            ->orWhereNotNull('heure_reunion') // Réunions planifiées
+            ->get();
     }
 }

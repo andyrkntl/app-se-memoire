@@ -26,8 +26,6 @@
         </div>
     @endif
 
-
-
     @foreach ($projet->jalon as $jalon)
         <div class="card mb-3">
             <!-- En-tête principal pliable -->
