@@ -133,7 +133,16 @@ class Activite extends Model
                         ->orWhereDate('date_prevue', '=', $in1Day); // 1 jour avant
                 });
         })
-            ->orWhereNotNull('heure_reunion') // Réunions planifiées
+            ->orWhere(function ($query) use ($today) {
+                $query->whereNotNull('heure_reunion') // Activités avec réunion planifiée
+                    ->where(function ($q) use ($today) {
+                        $q->whereDate('date_prevue', '=', $today) // Réunion ayant lieu aujourd'hui (date simple)
+                            ->orWhere(function ($dateRangeQuery) use ($today) {
+                                $dateRangeQuery->whereDate('date_debut', '<=', $today) // Date de début avant ou égale à aujourd'hui
+                                    ->whereDate('date_prevue', '>=', $today); // Date de fin après ou égale à aujourd'hui
+                            });
+                    });
+            })
             ->get();
     }
 }

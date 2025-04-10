@@ -55,7 +55,7 @@
                 <div class="navbar-collapse">
                     <ul class="navbar-nav mr-auto mt-md-0">
                         <li class="nav-item">
-                            <a class="nav-link sidebartoggler hidden-sm-down text-muted waves-effect waves-dark"
+                            <a class="nav-link sidebartoggler  text-muted waves-effect waves-dark"
                                 href="javascript:void(0)">
                                 <i class="ti-menu"></i>
                             </a>
@@ -64,51 +64,8 @@
 
                     <ul class="navbar-nav my-lg-0">
                         @if (Auth::check())
-
-
-
                             <!-- Icône de notification -->
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown"
-                                    data-toggle="dropdown">
-                                    <i class="fa-solid fa-bullhorn"></i>
-                                    @if (count($activiteNotifications) > 0)
-                                        <span class="badge badge-danger">{{ count($activiteNotifications) }}</span>
-                                    @endif
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="notificationDropdown">
-                                    <h6 class="dropdown-header">Notifications</h6>
-
-                                    @forelse($activiteNotifications as $notif)
-                                        <a class="dropdown-item" href="#">
-                                            <i class="fa-solid fa-arrow-right"></i> {{ $notif->nom_activite }}<br>
-                                            @if ($notif->statut_activite == 'En retard')
-                                                <small class="text-danger">En retard depuis
-                                                    {{ $notif->date_prevue->diffForHumans() }}</small>
-                                            @elseif($notif->date_prevue->isToday())
-                                                <small class="text-warning">Prévue aujourd’hui</small>
-                                            @elseif($notif->date_prevue->isSameDay(now()->addDays(15)))
-                                                <small class="text-info">Prévue dans 15 jours</small>
-                                            @elseif($notif->date_prevue->isSameDay(now()->addDays(7)))
-                                                <small class="text-info">Prévue dans 7 jours</small>
-                                            @elseif($notif->date_prevue->isSameDay(now()->addDays(3)))
-                                                <small class="text-info">Prévue dans 3 jours</small>
-                                            @elseif($notif->date_prevue->isSameDay(now()->addDay()))
-                                                <small class="text-info">Prévue demain</small>
-                                            @endif
-
-                                            @if ($notif->heure_reunion)
-                                                <small class="text-primary"><i class="fa-solid fa-stopwatch"></i>
-                                                    Réunion à
-                                                    {{ $notif->heure_reunion }} à {{ $notif->lieu_reunion }}</small>
-                                            @endif
-                                        </a>
-                                    @empty
-                                        <a class="dropdown-item text-muted" href="#">Aucune notification</a>
-                                    @endforelse
-                                </div>
-                            </li>
-
+                            @include('notifications.affichageNotifications')
 
 
 
@@ -150,6 +107,13 @@
 
         <aside class="left-sidebar">
             <div class="scroll-sidebar">
+                <!-- Bouton Fermer (mobile uniquement) -->
+                {{-- <div class="sidebar-header d-block d-md-none text-right p-2">
+                    <a href="javascript:void(0)" class="text-danger close-sidebar" style="font-size: 20px;">
+                        <i class="ti-close"></i> Fermer
+                    </a>
+                </div> --}}
+
                 <nav class="sidebar-nav">
                     <ul id="sidebarnav">
                         <li>
@@ -221,6 +185,7 @@
             </div>
         </div>
     </div>
+
 
     <!-- Scripts -->
     <script src="/assets/plugins/jquery/jquery.min.js"></script>

@@ -10,10 +10,10 @@ use App\Http\Controllers\PartiePrenanteController;
 use App\Http\Controllers\GoogleCalendarController;
 
 
+
 Auth::routes();
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::resource('/suivi/projet', projetController::class);
-
 
 
 Route::post('/projets', [ProjetController::class, 'store'])->name('projet.store');
