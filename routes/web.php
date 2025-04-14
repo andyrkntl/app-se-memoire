@@ -12,7 +12,7 @@ use App\Http\Controllers\GoogleCalendarController;
 
 
 Auth::routes();
-Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index', 'evolutionTauxExecution'])->name('home');
 Route::resource('/suivi/projet', projetController::class);
 
 

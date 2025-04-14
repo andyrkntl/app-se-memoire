@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Projet;
 use App\Models\Activite;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+
 
 class HomeController extends Controller
 {
@@ -23,7 +25,7 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index()
+    public function index(Request $request)
     {
         // Total Projets
         $totalProjets = Projet::count();
@@ -89,6 +91,12 @@ class HomeController extends Controller
 
 
 
+
+        // === Données pour le graphique dynamique ===
+        [$data, $frequence, $projet, $projetsDisponibles] = $this->getEvolutionTauxData($request);
+
+
+
         return view('accueil', compact(
             'totalProjets',
             'avancementGlobal',
@@ -100,7 +108,179 @@ class HomeController extends Controller
             'pourcentageAchevees',
             'listeProjets',
             'listeActivitesSemaine',
-            'listeProjetsRisques'
+            'listeProjetsRisques',
+            'data',
+            'frequence',
+            'projet',
+            'projetsDisponibles' //données pour le test
         ));
+    }
+
+
+
+    // private function getEvolutionTauxData(Request $request)
+    // {
+    //     $frequence = $request->input('frequence', 'mois');
+    //     $projetFiltre = $request->input('projet');
+    //     $dateFormat = match ($frequence) {
+    //         'jour' => '%Y-%m-%d',
+    //         'semaine' => '%x-%v',
+    //         'mois' => '%Y-%m',
+    //         'annee' => '%Y',
+    //         default => '%Y-%m',
+    //     };
+
+    //     $data = [];
+
+    //     // Filtrage conditionnel : tous les projets ou un seul
+    //     $query = Projet::with('jalon');
+    //     if ($projetFiltre) {
+    //         $query->where('nom_projet', $projetFiltre);
+    //     }
+
+    //     $allProjets = $query->get();
+
+    //     foreach ($allProjets as $projet) {
+    //         $grouped = $projet->jalon->groupBy(function ($jalon) use ($dateFormat) {
+    //             return $jalon->created_at->formatLocalized($dateFormat);
+    //         });
+
+    //         $serie = [];
+
+    //         foreach ($grouped as $period => $jalons) {
+    //             $avg = $jalons->avg('taux_avancement');
+    //             $serie[] = [
+    //                 'x' => $period,
+    //                 'y' => round($avg, 2),
+    //             ];
+    //         }
+
+    //         $data[] = [
+    //             'name' => $projet->nom_projet,
+    //             'data' => $serie,
+    //         ];
+    //     }
+
+    //     return [$data, $frequence, $projetFiltre];
+    // }
+
+
+
+    //c'est pour tester graphique
+    private function getEvolutionTauxData(Request $request)
+    {
+        $frequence = $request->input('frequence', 'mois');
+        $projetFiltre = $request->input('projet'); // Récupère le projet à filtrer
+        $projetsDisponibles = ['Projet Alpha', 'Projet Beta'];
+
+
+        $data = [];
+
+        switch ($frequence) {
+            case 'jour':
+                $data = [
+                    [
+                        'name' => 'Projet Alpha',
+                        'data' => [
+                            ['x' => '2025-04-10', 'y' => 10],
+                            ['x' => '2025-04-11', 'y' => 20],
+                            ['x' => '2025-04-12', 'y' => 30],
+                            ['x' => '2025-04-13', 'y' => 35],
+                            ['x' => '2025-04-14', 'y' => 45],
+                        ]
+                    ],
+                    [
+                        'name' => 'Projet Beta',
+                        'data' => [
+                            ['x' => '2025-04-10', 'y' => 15],
+                            ['x' => '2025-04-11', 'y' => 25],
+                            ['x' => '2025-04-12', 'y' => 40],
+                            ['x' => '2025-04-13', 'y' => 50],
+                            ['x' => '2025-04-14', 'y' => 60],
+                        ]
+                    ]
+                ];
+                break;
+
+            case 'semaine':
+                $data = [
+                    [
+                        'name' => 'Projet Alpha',
+                        'data' => [
+                            ['x' => '2025-W13', 'y' => 20],
+                            ['x' => '2025-W14', 'y' => 35],
+                            ['x' => '2025-W15', 'y' => 50],
+                            ['x' => '2025-W16', 'y' => 60],
+                        ]
+                    ],
+                    [
+                        'name' => 'Projet Beta',
+                        'data' => [
+                            ['x' => '2025-W13', 'y' => 25],
+                            ['x' => '2025-W14', 'y' => 45],
+                            ['x' => '2025-W15', 'y' => 65],
+                            ['x' => '2025-W16', 'y' => 80],
+                        ]
+                    ]
+                ];
+                break;
+
+            case 'annee':
+                $data = [
+                    [
+                        'name' => 'Projet Alpha',
+                        'data' => [
+                            ['x' => '2022', 'y' => 15],
+                            ['x' => '2023', 'y' => 35],
+                            ['x' => '2024', 'y' => 55],
+                            ['x' => '2025', 'y' => 70],
+                        ]
+                    ],
+                    [
+                        'name' => 'Projet Beta',
+                        'data' => [
+                            ['x' => '2022', 'y' => 20],
+                            ['x' => '2023', 'y' => 40],
+                            ['x' => '2024', 'y' => 60],
+                            ['x' => '2025', 'y' => 80],
+                        ]
+                    ]
+                ];
+                break;
+
+            case 'mois':
+            default:
+                $data = [
+                    [
+                        'name' => 'Projet Alpha',
+                        'data' => [
+                            ['x' => '2025-01', 'y' => 10],
+                            ['x' => '2025-02', 'y' => 25],
+                            ['x' => '2025-03', 'y' => 45],
+                            ['x' => '2025-04', 'y' => 60],
+                        ]
+                    ],
+                    [
+                        'name' => 'Projet Beta',
+                        'data' => [
+                            ['x' => '2025-01', 'y' => 15],
+                            ['x' => '2025-02', 'y' => 30],
+                            ['x' => '2025-03', 'y' => 55],
+                            ['x' => '2025-04', 'y' => 75],
+                        ]
+                    ]
+                ];
+                break;
+        }
+
+        // 🔍 Si un projet est sélectionné, filtrer les données
+        if ($projetFiltre) {
+            $data = array_filter($data, function ($projet) use ($projetFiltre) {
+                return $projet['name'] === $projetFiltre;
+            });
+            $data = array_values($data); // Réindexer le tableau
+        }
+
+        return [$data, $frequence, $projetFiltre, $projetsDisponibles];
     }
 }
