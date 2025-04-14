@@ -143,6 +143,7 @@ class Activite extends Model
                             });
                     });
             })
+            ->with(['jalon.projet']) // Chargement eager des relations jalon et projet
             ->get();
     }
 }

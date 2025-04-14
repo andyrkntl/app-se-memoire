@@ -66,6 +66,29 @@ class HomeController extends Controller
             ? round((Activite::where('statut_activite', 'Achevé')->count() / $totalActivites) * 100)
             : 0;
 
+
+        $listeProjets = Projet::all();
+
+
+
+        $listeActivitesSemaine = Activite::with('jalon.projet')
+            ->whereBetween('date_prevue', [$startWeek, $endWeek])
+            ->get();
+
+
+
+        $listeProjetsRisques = Projet::where(function ($query) {
+            $query->where(function ($q) {
+                $q->whereDate('date_fin', '<', now())
+                    ->where('taux_avancement', '<', 50);
+            })->orWhere(function ($q) {
+                $q->whereBetween('date_fin', [now(), now()->addMonth()])
+                    ->where('taux_avancement', '<', 50);
+            });
+        })->get();
+
+
+
         return view('accueil', compact(
             'totalProjets',
             'avancementGlobal',
@@ -74,7 +97,10 @@ class HomeController extends Controller
             'totalActivites',
             'pourcentageEnCours',
             'pourcentageEnRetard',
-            'pourcentageAchevees'
+            'pourcentageAchevees',
+            'listeProjets',
+            'listeActivitesSemaine',
+            'listeProjetsRisques'
         ));
     }
 }

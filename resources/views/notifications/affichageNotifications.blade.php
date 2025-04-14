@@ -11,7 +11,19 @@
         <h6 class="dropdown-header">Notifications</h6>
         @forelse($activiteNotifications as $notif)
             <a class="dropdown-item" href="#">
-                <i class="fa-solid fa-arrow-right"></i> {{ $notif->nom_activite }}<br>
+                <i class="fa-solid fa-arrow-right"></i> {{ $notif->nom_activite }} <br>
+
+                <!-- Affichage du jalon et du projet -->
+                @if ($notif->jalon)
+                    <small>
+                        <i class="fa-solid fa-flag"></i> {{ $notif->jalon->nom_jalon }}
+                        @if ($notif->jalon->projet)
+                            | <i class="fa-solid fa-folder"></i> {{ $notif->jalon->projet->nom_projet }}
+                        @endif
+                    </small><br>
+                @endif
+
+
                 @if ($notif->statut_activite == 'En retard')
                     <small class="text-danger">En retard depuis
                         {{ $notif->date_prevue->diffForHumans() }}</small>
