@@ -68,16 +68,11 @@ class HomeController extends Controller
             ? round((Activite::where('statut_activite', 'Achevé')->count() / $totalActivites) * 100)
             : 0;
 
-
         $listeProjets = Projet::all();
-
-
 
         $listeActivitesSemaine = Activite::with('jalon.projet')
             ->whereBetween('date_prevue', [$startWeek, $endWeek])
             ->get();
-
-
 
         $listeProjetsRisques = Projet::where(function ($query) {
             $query->where(function ($q) {
@@ -89,13 +84,36 @@ class HomeController extends Controller
             });
         })->get();
 
+        // Logique du Burn-down chart
+        $projetSelectionne = null;
+        $burndownData = null;
 
+        // Vérifier si un projet spécifique est demandé pour le burn-down chart
+        $projet_id = $request->input('projet_id');
 
+        if ($projet_id) {
+            // Charger le projet spécifique avec ses jalons et activités
+            $projetSelectionne = Projet::with(['jalon.activite'])->findOrFail($projet_id);
+            $burndownData = $this->prepareBurndownData($projetSelectionne);
+        } else {
+            // Préparer des données pour un burn-down chart global (tous les projets)
+            // On prend le plus ancien projet comme date de début et le plus récent comme date de fin
+            $premiereDate = Projet::min('date_debut');
+            $derniereDate = Projet::max('date_fin');
 
-        // === Données pour le graphique dynamique ===
-        [$data, $frequence, $projet, $projetsDisponibles] = $this->getEvolutionTauxData($request);
-
-
+            if ($premiereDate && $derniereDate) {
+                $burndownData = $this->prepareBurndownDataGlobal($premiereDate, $derniereDate);
+            } else {
+                $burndownData = [
+                    'labels' => [],
+                    'ideal' => [],
+                    'actual' => [],
+                    'remainingWork' => 0,
+                    'totalDays' => 0,
+                    'elapsedDays' => 0,
+                ];
+            }
+        }
 
         return view('accueil', compact(
             'totalProjets',
@@ -109,178 +127,199 @@ class HomeController extends Controller
             'listeProjets',
             'listeActivitesSemaine',
             'listeProjetsRisques',
-            'data',
-            'frequence',
-            'projet',
-            'projetsDisponibles' //données pour le test
+            'projetSelectionne',
+            'burndownData'
         ));
     }
 
-
-
-    // private function getEvolutionTauxData(Request $request)
-    // {
-    //     $frequence = $request->input('frequence', 'mois');
-    //     $projetFiltre = $request->input('projet');
-    //     $dateFormat = match ($frequence) {
-    //         'jour' => '%Y-%m-%d',
-    //         'semaine' => '%x-%v',
-    //         'mois' => '%Y-%m',
-    //         'annee' => '%Y',
-    //         default => '%Y-%m',
-    //     };
-
-    //     $data = [];
-
-    //     // Filtrage conditionnel : tous les projets ou un seul
-    //     $query = Projet::with('jalon');
-    //     if ($projetFiltre) {
-    //         $query->where('nom_projet', $projetFiltre);
-    //     }
-
-    //     $allProjets = $query->get();
-
-    //     foreach ($allProjets as $projet) {
-    //         $grouped = $projet->jalon->groupBy(function ($jalon) use ($dateFormat) {
-    //             return $jalon->created_at->formatLocalized($dateFormat);
-    //         });
-
-    //         $serie = [];
-
-    //         foreach ($grouped as $period => $jalons) {
-    //             $avg = $jalons->avg('taux_avancement');
-    //             $serie[] = [
-    //                 'x' => $period,
-    //                 'y' => round($avg, 2),
-    //             ];
-    //         }
-
-    //         $data[] = [
-    //             'name' => $projet->nom_projet,
-    //             'data' => $serie,
-    //         ];
-    //     }
-
-    //     return [$data, $frequence, $projetFiltre];
-    // }
-
-
-
-    //c'est pour tester graphique
-    private function getEvolutionTauxData(Request $request)
+    /**
+     * Prépare les données pour le burn-down chart d'un projet spécifique
+     */
+    private function prepareBurndownData(Projet $projet)
     {
-        $frequence = $request->input('frequence', 'mois');
-        $projetFiltre = $request->input('projet'); // Récupère le projet à filtrer
-        $projetsDisponibles = ['Projet Alpha', 'Projet Beta'];
-
-
-        $data = [];
-
-        switch ($frequence) {
-            case 'jour':
-                $data = [
-                    [
-                        'name' => 'Projet Alpha',
-                        'data' => [
-                            ['x' => '2025-04-10', 'y' => 10],
-                            ['x' => '2025-04-11', 'y' => 20],
-                            ['x' => '2025-04-12', 'y' => 30],
-                            ['x' => '2025-04-13', 'y' => 35],
-                            ['x' => '2025-04-14', 'y' => 45],
-                        ]
-                    ],
-                    [
-                        'name' => 'Projet Beta',
-                        'data' => [
-                            ['x' => '2025-04-10', 'y' => 15],
-                            ['x' => '2025-04-11', 'y' => 25],
-                            ['x' => '2025-04-12', 'y' => 40],
-                            ['x' => '2025-04-13', 'y' => 50],
-                            ['x' => '2025-04-14', 'y' => 60],
-                        ]
-                    ]
-                ];
-                break;
-
-            case 'semaine':
-                $data = [
-                    [
-                        'name' => 'Projet Alpha',
-                        'data' => [
-                            ['x' => '2025-W13', 'y' => 20],
-                            ['x' => '2025-W14', 'y' => 35],
-                            ['x' => '2025-W15', 'y' => 50],
-                            ['x' => '2025-W16', 'y' => 60],
-                        ]
-                    ],
-                    [
-                        'name' => 'Projet Beta',
-                        'data' => [
-                            ['x' => '2025-W13', 'y' => 25],
-                            ['x' => '2025-W14', 'y' => 45],
-                            ['x' => '2025-W15', 'y' => 65],
-                            ['x' => '2025-W16', 'y' => 80],
-                        ]
-                    ]
-                ];
-                break;
-
-            case 'annee':
-                $data = [
-                    [
-                        'name' => 'Projet Alpha',
-                        'data' => [
-                            ['x' => '2022', 'y' => 15],
-                            ['x' => '2023', 'y' => 35],
-                            ['x' => '2024', 'y' => 55],
-                            ['x' => '2025', 'y' => 70],
-                        ]
-                    ],
-                    [
-                        'name' => 'Projet Beta',
-                        'data' => [
-                            ['x' => '2022', 'y' => 20],
-                            ['x' => '2023', 'y' => 40],
-                            ['x' => '2024', 'y' => 60],
-                            ['x' => '2025', 'y' => 80],
-                        ]
-                    ]
-                ];
-                break;
-
-            case 'mois':
-            default:
-                $data = [
-                    [
-                        'name' => 'Projet Alpha',
-                        'data' => [
-                            ['x' => '2025-01', 'y' => 10],
-                            ['x' => '2025-02', 'y' => 25],
-                            ['x' => '2025-03', 'y' => 45],
-                            ['x' => '2025-04', 'y' => 60],
-                        ]
-                    ],
-                    [
-                        'name' => 'Projet Beta',
-                        'data' => [
-                            ['x' => '2025-01', 'y' => 15],
-                            ['x' => '2025-02', 'y' => 30],
-                            ['x' => '2025-03', 'y' => 55],
-                            ['x' => '2025-04', 'y' => 75],
-                        ]
-                    ]
-                ];
-                break;
+        // Vérifier si les dates du projet sont définies
+        if (!$projet->date_debut || !$projet->date_fin) {
+            return [
+                'labels' => [],
+                'ideal' => [],
+                'actual' => [],
+                'remainingWork' => 0,
+                'totalDays' => 0,
+                'elapsedDays' => 0,
+            ];
         }
 
-        // 🔍 Si un projet est sélectionné, filtrer les données
-        if ($projetFiltre) {
-            $data = array_filter($data, function ($projet) use ($projetFiltre) {
-                return $projet['name'] === $projetFiltre;
-            });
-            $data = array_values($data); // Réindexer le tableau
+        $startDate = Carbon::parse($projet->date_debut);
+        $endDate = Carbon::parse($projet->date_fin);
+        $today = Carbon::today();
+
+        // Si le projet est terminé, utiliser la date de fin comme date actuelle
+        if ($today->isAfter($endDate)) {
+            $today = $endDate->copy();
         }
 
-        return [$data, $frequence, $projetFiltre, $projetsDisponibles];
+        // Calculer la durée totale du projet en jours
+        $totalDays = $startDate->diffInDays($endDate) + 1;
+        $elapsedDays = $startDate->diffInDays($today) + 1;
+
+        // Récupérer toutes les activités du projet
+        $activites = $projet->activite;
+        $totalActivites = $activites->count();
+
+        if ($totalActivites === 0) {
+            return [
+                'labels' => [],
+                'ideal' => [],
+                'actual' => [],
+                'remainingWork' => 0,
+                'totalDays' => $totalDays,
+                'elapsedDays' => $elapsedDays,
+            ];
+        }
+
+        // Ligne idéale (théorique)
+        $labels = [];
+        $ideal = [];
+        $actual = [];
+
+        // Calculer les activités terminées par jour
+        $activitesTermineesParJour = [];
+        foreach ($activites as $activite) {
+            if ($activite->date_fin) {
+                $finDate = Carbon::parse($activite->date_fin)->format('Y-m-d');
+                if (!isset($activitesTermineesParJour[$finDate])) {
+                    $activitesTermineesParJour[$finDate] = 0;
+                }
+                $activitesTermineesParJour[$finDate]++;
+            }
+        }
+
+        // Générer les données pour chaque jour du projet
+        $currentDate = $startDate->copy();
+        $workRemaining = $totalActivites;
+        $cumulativeCompleted = 0;
+
+        while ($currentDate->lessThanOrEqualTo($endDate)) {
+            $dateFormatted = $currentDate->format('Y-m-d');
+            $labels[] = $currentDate->format('d/m/Y');
+
+            // Ligne idéale : diminution linéaire
+            $daysElapsed = $startDate->diffInDays($currentDate);
+            $idealRemaining = $totalActivites - ($totalActivites * ($daysElapsed / $totalDays));
+            $ideal[] = round($idealRemaining, 1);
+
+            // Ligne réelle : basée sur les activités terminées
+            if (isset($activitesTermineesParJour[$dateFormatted])) {
+                $cumulativeCompleted += $activitesTermineesParJour[$dateFormatted];
+            }
+            $actualRemaining = $totalActivites - $cumulativeCompleted;
+            $actual[] = $actualRemaining;
+
+            // Si nous sommes à aujourd'hui, enregistrer le travail restant
+            if ($currentDate->equalTo($today)) {
+                $workRemaining = $actualRemaining;
+            }
+
+            $currentDate->addDay();
+        }
+
+        return [
+            'labels' => $labels,
+            'ideal' => $ideal,
+            'actual' => $actual,
+            'remainingWork' => $workRemaining,
+            'totalDays' => $totalDays,
+            'elapsedDays' => $elapsedDays,
+        ];
+    }
+
+    /**
+     * Prépare les données pour un burn-down chart global de tous les projets
+     */
+    private function prepareBurndownDataGlobal($premiereDate, $derniereDate)
+    {
+        $startDate = Carbon::parse($premiereDate);
+        $endDate = Carbon::parse($derniereDate);
+        $today = Carbon::today();
+
+        // Si on a dépassé la date de fin, utiliser la date de fin comme date actuelle
+        if ($today->isAfter($endDate)) {
+            $today = $endDate->copy();
+        }
+
+        // Calculer la durée totale en jours
+        $totalDays = $startDate->diffInDays($endDate) + 1;
+        $elapsedDays = $startDate->diffInDays($today) + 1;
+
+        // Récupérer toutes les activités
+        $totalActivites = Activite::count();
+
+        if ($totalActivites === 0) {
+            return [
+                'labels' => [],
+                'ideal' => [],
+                'actual' => [],
+                'remainingWork' => 0,
+                'totalDays' => $totalDays,
+                'elapsedDays' => $elapsedDays,
+            ];
+        }
+
+        // Ligne idéale (théorique)
+        $labels = [];
+        $ideal = [];
+        $actual = [];
+
+        // Calculer les activités terminées par jour (statut "Achevé")
+        $activitesTermineesParJour = [];
+        $activitesAchevees = Activite::where('statut_activite', 'Achevé')
+            ->whereNotNull('date_fin')
+            ->get();
+
+        foreach ($activitesAchevees as $activite) {
+            $finDate = Carbon::parse($activite->date_fin)->format('Y-m-d');
+            if (!isset($activitesTermineesParJour[$finDate])) {
+                $activitesTermineesParJour[$finDate] = 0;
+            }
+            $activitesTermineesParJour[$finDate]++;
+        }
+
+        // Générer les données pour chaque jour
+        $currentDate = $startDate->copy();
+        $workRemaining = $totalActivites;
+        $cumulativeCompleted = 0;
+
+        while ($currentDate->lessThanOrEqualTo($endDate)) {
+            $dateFormatted = $currentDate->format('Y-m-d');
+            $labels[] = $currentDate->format('d/m/Y');
+
+            // Ligne idéale : diminution linéaire
+            $daysElapsed = $startDate->diffInDays($currentDate);
+            $idealRemaining = $totalActivites - ($totalActivites * ($daysElapsed / $totalDays));
+            $ideal[] = round($idealRemaining, 1);
+
+            // Ligne réelle : basée sur les activités terminées
+            if (isset($activitesTermineesParJour[$dateFormatted])) {
+                $cumulativeCompleted += $activitesTermineesParJour[$dateFormatted];
+            }
+            $actualRemaining = $totalActivites - $cumulativeCompleted;
+            $actual[] = $actualRemaining;
+
+            // Si nous sommes à aujourd'hui, enregistrer le travail restant
+            if ($currentDate->equalTo($today)) {
+                $workRemaining = $actualRemaining;
+            }
+
+            $currentDate->addDay();
+        }
+
+        return [
+            'labels' => $labels,
+            'ideal' => $ideal,
+            'actual' => $actual,
+            'remainingWork' => $workRemaining,
+            'totalDays' => $totalDays,
+            'elapsedDays' => $elapsedDays,
+        ];
     }
 }
