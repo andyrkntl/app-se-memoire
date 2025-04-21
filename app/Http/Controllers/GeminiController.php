@@ -9,7 +9,7 @@ use Smalot\PdfParser\Parser;
 
 class GeminiController extends Controller
 {
-    private $apiKey = 'AIzaSyDiaTtfRUMp1Du_fWlO50jU6JMT-x0ZC0o';
+    private $apiKey = 'à changer avec la clé api';
     private $model = 'models/gemini-1.5-pro'; // modèle valide
 
     private function callGemini($prompt)
