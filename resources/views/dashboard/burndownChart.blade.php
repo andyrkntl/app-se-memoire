@@ -66,9 +66,21 @@
                 <canvas id="burndownChart"></canvas>
             </div>
 
+
+
+            <!-- Ajout des boutons de contrôle du zoom -->
+            <div class="zoom-controls mt-2 mb-3">
+                <button id="reset-zoom" class="btn btn-sm btn-outline-secondary">
+                    <i class="fas fa-undo-alt"></i> Réinitialiser le zoom
+                </button>
+                <span class="ml-2 text-muted small"><i class="fas fa-info-circle"></i> Utilisez la molette de la souris
+                    ou pincez l'écran pour zoomer, et glissez pour vous déplacer</span>
+            </div>
+
             <div class="row mt-4">
                 <div class="col-md-12">
-                    <div class="card bg-light">
+                    <div class="card bg-light" style="cursor: pointer;" data-toggle="modal"
+                        data-target="#graphInfoModal">
                         <div class="card-body small">
                             <div class="d-flex mb-2">
                                 <span class="badge badge-primary mr-2">&nbsp;</span>
@@ -106,8 +118,10 @@
 
 
 
+@include('dashboard.infoChartModal')
 
 
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1"></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -181,11 +195,39 @@
                                 beginAtZero: true,
                                 min: 0,
                                 // Définir le max dynamiquement selon le nombre total d'activités
-                                max: {{ max(array_merge($burndownData['ideal'], $burndownData['actual'])) + 1 }}
+                                max: {{ max(array_merge($burndownData['ideal'] ?? [0], $burndownData['actual'] ?? [0])) + 1 }}
                             }
                         }]
+                    },
+                    // Configuration du plugin de zoom
+                    plugins: {
+                        zoom: {
+                            pan: {
+                                enabled: true,
+                                mode: 'xy',
+                                speed: 10,
+                                threshold: 10
+                            },
+                            zoom: {
+                                enabled: true,
+                                drag: false,
+                                mode: 'xy',
+                                speed: 0.1,
+                                wheel: {
+                                    enabled: true
+                                },
+                                pinch: {
+                                    enabled: true
+                                }
+                            }
+                        }
                     }
                 }
+            });
+
+            // Gestionnaire d'événement pour le bouton de réinitialisation du zoom
+            document.getElementById('reset-zoom').addEventListener('click', function() {
+                burndownChart.resetZoom();
             });
         @endif
     });

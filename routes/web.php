@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\PartiePrenanteController;
 use App\Http\Controllers\GoogleCalendarController;
-
+use App\Http\Controllers\GeminiController;
+use App\Http\Controllers\ExportController;
 
 
 Auth::routes();
@@ -57,3 +58,8 @@ Route::get('/google/redirect', [GoogleCalendarController::class, 'redirectToGoog
 Route::get('/google/callback', [GoogleCalendarController::class, 'handleGoogleCallback']);
 Route::get('/google/events', [GoogleCalendarController::class, 'listEvents'])->name('agenda.events');
 Route::post('/activites/{id}/add-to-google-calendar', [GoogleCalendarController::class, 'addToGoogleCalendar'])->name('activites.googlecalendar');
+
+
+Route::get('/gemini-synthese', [GeminiController::class, 'synthese'])->name('gemini.synthese');
+Route::post('/gemini-question', [GeminiController::class, 'question']);
+Route::post('/export-word', [ExportController::class, 'exportWord'])->name('export.word');

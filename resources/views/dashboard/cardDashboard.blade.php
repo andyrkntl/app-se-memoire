@@ -88,10 +88,11 @@
                             <h3 class="card-title mb-4">Total des Activités : {{ $totalActivites }}</h3>
                         </div>
 
-                        <div class="d-flex justify-content-between">
+                        <!-- Modification principale ici -->
+                        <div class="d-flex flex-column flex-md-row justify-content-between gap-3 align-items-center">
                             <!-- Activités en cours -->
-                            <div class="activity-item">
-                                <div class="d-flex align-items-center">
+                            <div class="activity-item w-100 w-md-auto">
+                                <div class="d-flex align-items-center justify-content-center justify-content-md-start">
                                     <div class="activity-icon bg-gradient-purple">
                                         <i class="fas fa-sync-alt"></i>
                                     </div>
@@ -106,8 +107,8 @@
                             <div class="vr d-none d-md-block"></div>
 
                             <!-- En retard -->
-                            <div class="activity-item">
-                                <div class="d-flex align-items-center">
+                            <div class="activity-item w-100 w-md-auto">
+                                <div class="d-flex align-items-center justify-content-center justify-content-md-start">
                                     <div class="activity-icon bg-gradient-lime">
                                         <i class="fas fa-clock"></i>
                                     </div>
@@ -122,8 +123,8 @@
                             <div class="vr d-none d-md-block"></div>
 
                             <!-- Activités achevées -->
-                            <div class="activity-item">
-                                <div class="d-flex align-items-center">
+                            <div class="activity-item w-100 w-md-auto">
+                                <div class="d-flex align-items-center justify-content-center justify-content-md-start">
                                     <div class="activity-icon bg-gradient-pink">
                                         <i class="fas fa-check-circle"></i>
                                     </div>

@@ -159,6 +159,12 @@
                             </a>
                         </li>
                         <li>
+                            <a class="waves-effect waves-dark" href="{{ route('gemini.synthese') }}">
+                                <i class="fa-solid fa-comments"></i>
+                                <span class="preview">Synthèse IA</span>
+                            </a>
+                        </li>
+                        <li>
                             <a class="waves-effect waves-dark" href="#">
                                 <i class="fa-sharp-duotone fa-solid fa-user-tie"></i>
                                 <span class="preview">Utilisateurs</span>
