@@ -17,12 +17,12 @@
 
 
         {{-- Bouton d’export Word --}}
-        <form action="{{ route('export.word') }}" method="POST">
+        <form action="{{ route('export.pdf') }}" method="POST">
             @csrf
             <input type="hidden" name="synthese" value="{{ $synthese ?? '' }}">
             <input type="hidden" name="question" value="{{ $question ?? '' }}">
             <button type="submit" class="btn btn-success mb-4"><i class="fa-solid fa-file-export"></i> Exporter en
-                Word</button>
+                PDF</button>
         </form>
 
         <h4>Poser une autre question 👇</h4>

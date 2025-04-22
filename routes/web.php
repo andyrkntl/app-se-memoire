@@ -62,4 +62,4 @@ Route::post('/activites/{id}/add-to-google-calendar', [GoogleCalendarController:
 
 Route::get('/gemini-synthese', [GeminiController::class, 'synthese'])->name('gemini.synthese');
 Route::post('/gemini-question', [GeminiController::class, 'question']);
-Route::post('/export-word', [ExportController::class, 'exportWord'])->name('export.word');
+Route::post('/export-word', [ExportController::class, 'exportPdf'])->name('export.pdf');
