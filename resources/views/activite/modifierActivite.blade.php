@@ -35,17 +35,17 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Lieu de la réunion</label>
+                        <label>Lieu (réunion, zone d'intervention, etc ...)</label>
                         <input type="text" name="lieu_reunion" id="editLieuReunion" class="form-control">
                     </div>
 
                     <div class="form-group">
-                        <label>Heure de la réunion</label>
+                        <label>Heure (si c'est une réunion)</label>
                         <input type="time" name="heure_reunion" id="editHeureReunion" class="form-control">
                     </div>
 
                     <div class="form-group">
-                        <label>Description de la réunion</label>
+                        <label>Description (problème, objectif, description réunion, etc...)</label>
                         <textarea name="description_reunion" id="editDescriptionReunion" class="form-control" rows="3"></textarea>
                     </div>
 

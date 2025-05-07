@@ -11,10 +11,10 @@
         <div class="col-md-7 col-4 align-self-center">
             <div class="d-flex m-t-10 justify-content-end">
                 <div class="d-flex m-r-20 m-l-10 hidden-md-down">
-                    <h5>a</h5>
+                    {{-- <h5>a</h5> --}}
                 </div>
                 <div class="d-flex m-r-20 m-l-10 hidden-md-down">
-                    <h5>b</h5>
+                    {{-- <h5>b</h5> --}}
                 </div>
             </div>
         </div>
@@ -23,16 +23,21 @@
     <div class="card">
         <div class="card-body">
             <div class="d-flex no-block mb-3">
-                <button type="button" data-toggle="modal" data-target="#addProjetModal" class="btn btn-success">
-                    <i class="fa-duotone fa-solid fa-plus mr-2"></i>Insérer un nouveau projet
-                </button>
+                @if (auth()->user()->role === 'admin' || auth()->user()->role === 'commentateur')
+                    <button type="button" data-toggle="modal" data-target="#addProjetModal" class="btn btn-success">
+                        <i class="fa-duotone fa-solid fa-plus mr-2"></i>Insérer un nouveau projet
+                    </button>
+                @endif
                 @include('projet.ajoutProjet')
+
+
             </div>
 
             <form method="GET" action="{{ route('projet.index') }}" class="mb-4">
                 <div class="row">
+
                     <!-- Filtre par chantier -->
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label for="chantier_id">Chantier</label>
                         <select name="chantier_id" id="chantier_id" class="form-control">
                             <option value="">Tous</option>
@@ -46,7 +51,7 @@
                     </div>
 
                     <!-- Filtre par responsable -->
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label for="responsable">Responsable</label>
                         <select name="lead_id" id="lead_id" class="form-control">
                             <option value="">Tous</option>
@@ -59,7 +64,7 @@
                     </div>
 
                     <!-- Filtre par statut d'avancement -->
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label for="statut_projet">Statut</label>
                         <select name="statut_projet" id="statut_projet" class="form-control">
                             <option value="">Tous</option>
@@ -70,6 +75,12 @@
                             <option value="En retard" {{ request('statut_projet') == 'En retard' ? 'selected' : '' }}>En
                                 retard</option>
                         </select>
+                    </div>
+                    <!-- Recherche par nom de projet -->
+                    <div class="col-md-3">
+                        <label for="nom_projet">Nom du projet</label>
+                        <input type="text" name="nom_projet" id="nom_projet" class="form-control"
+                            placeholder="Rechercher un projet" value="{{ request('nom_projet') }}">
                     </div>
                 </div>
 
@@ -131,24 +142,31 @@
                                 </form>
 
                                 <!-- Bouton Modifier -->
-                                <button type="button" class="btn btn-warning edit-projet-btn" data-toggle="modal"
-                                    data-target="#editProjetModal" data-projet-id="{{ $projet->id }}"
-                                    data-nom-projet="{{ $projet->nom_projet }}" data-objectifs="{{ $projet->objectifs }}"
-                                    data-date-debut="{{ $projet->date_debut }}" data-date-fin="{{ $projet->date_fin }}"
-                                    data-chantier-id="{{ $projet->chantier_id }}" data-lead-id="{{ $projet->lead_id }}">
-                                    <i class="fa fa-edit mr-1"></i>
-                                </button>
+                                @if (auth()->user()->role === 'admin' || auth()->user()->role === 'commentateur')
+                                    <button type="button" class="btn btn-warning edit-projet-btn" data-toggle="modal"
+                                        data-target="#editProjetModal" data-projet-id="{{ $projet->id }}"
+                                        data-nom-projet="{{ $projet->nom_projet }}"
+                                        data-objectifs="{{ $projet->objectifs }}"
+                                        data-date-debut="{{ $projet->date_debut }}"
+                                        data-date-fin="{{ $projet->date_fin }}"
+                                        data-chantier-id="{{ $projet->chantier_id }}"
+                                        data-lead-id="{{ $projet->lead_id }}">
+                                        <i class="fa fa-edit mr-1"></i>
+                                    </button>
+                                @endif
 
                                 <!-- Bouton Supprimer -->
-                                <form id="delete-form-{{ $projet->id }}"
-                                    action="{{ route('projet.destroy', $projet->id) }}" method="POST"
-                                    style="display: none;">
-                                    @csrf
-                                    @method('DELETE')
-                                </form>
-                                <button class="btn btn-danger mx-2" onclick="confirmDelete({{ $projet->id }})">
-                                    <i class="mdi mdi-delete-empty"></i>
-                                </button>
+                                @if (auth()->user()->role === 'admin' || auth()->user()->role === 'commentateur')
+                                    <form id="delete-form-{{ $projet->id }}"
+                                        action="{{ route('projet.destroy', $projet->id) }}" method="POST"
+                                        style="display: none;">
+                                        @csrf
+                                        @method('DELETE')
+                                    </form>
+                                    <button class="btn btn-danger mx-2" onclick="confirmDelete({{ $projet->id }})">
+                                        <i class="mdi mdi-delete-empty"></i>
+                                    </button>
+                                @endif
                             </div>
                         </div>
                     </div>

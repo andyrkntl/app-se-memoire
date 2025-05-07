@@ -5,9 +5,11 @@
     <h3 class="text-center">Progression du projet : {{ $projet->nom_projet }}</h3>
     <div class=" mb-4">
         {{-- bouton ajout jalon --}}
-        <button class="btn btn-success" data-toggle="modal" data-target="#addJalonModal">
-            <i class="bi bi-plus-circle"></i> Ajouter un nouveau jalon
-        </button>
+        @if (auth()->user()->role === 'admin' || auth()->user()->role === 'commentateur')
+            <button class="btn btn-success" data-toggle="modal" data-target="#addJalonModal">
+                <i class="bi bi-plus-circle"></i> Ajouter un nouveau jalon
+            </button>
+        @endif
     </div>
     @include('jalon.ajoutJalon') <!-- Ajoutez cette ligne -->
 
@@ -54,18 +56,22 @@
 
                             <div class="d-flex align-items-center">
                                 {{-- bouton de modification d'un jalon --}}
-                                <button class="btn btn-sm btn-outline-primary  mr-2 edit-jalon" data-toggle="modal"
-                                    data-target="#editJalonModal" data-id="{{ $jalon->id }}"
-                                    data-nom="{{ $jalon->nom_jalon }}" data-description="{{ $jalon->description }}">
-                                    <i class="bi bi-pencil"></i>
+                                @if (auth()->user()->role === 'admin' || auth()->user()->role === 'commentateur')
+                                    <button class="btn btn-sm btn-outline-primary  mr-2 edit-jalon" data-toggle="modal"
+                                        data-target="#editJalonModal" data-id="{{ $jalon->id }}"
+                                        data-nom="{{ $jalon->nom_jalon }}" data-description="{{ $jalon->description }}">
+                                        <i class="bi bi-pencil"></i>
+                                @endif
                                 </button>
 
 
                                 <!-- Bouton de suppression du jalon -->
-                                <button class="btn btn-sm btn-outline-danger delete-jalon-btn"
-                                    data-jalon-id="{{ $jalon->id }}">
-                                    <i class="bi bi-trash"></i>
-                                </button>
+                                @if (auth()->user()->role === 'admin' || auth()->user()->role === 'commentateur')
+                                    <button class="btn btn-sm btn-outline-danger delete-jalon-btn"
+                                        data-jalon-id="{{ $jalon->id }}">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                @endif
                             </div>
                         </div>
 
@@ -243,31 +249,40 @@
                                                     {{ $activite->statut_activite }}
                                                 </span>
 
-                                                <button class="btn btn-sm btn-outline-primary mr-2 edit-activity"
-                                                    data-toggle="modal" data-target="#editActivityModal"
-                                                    data-id="{{ $activite->id }}"
-                                                    data-nom="{{ $activite->nom_activite }}"
-                                                    data-debut="{{ $activite->date_debut_formatted }}"
-                                                    data-prevue="{{ $activite->date_prevue_formatted }}"
-                                                    data-fin="{{ $activite->date_fin_formatted }}"
-                                                    data-statut="{{ $activite->statut_activite }}"
-                                                    data-lieu="{{ $activite->lieu_reunion }}"
-                                                    data-heure="{{ $activite->heure_reunion }}"
-                                                    data-description="{{ $activite->description_reunion }}">
-                                                    <i class="bi bi-pencil"></i>
-                                                </button>
+                                                @if (auth()->user()->role === 'admin' || auth()->user()->role === 'commentateur')
+                                                    <button class="btn btn-sm btn-outline-primary mr-2 edit-activity"
+                                                        data-toggle="modal" data-target="#editActivityModal"
+                                                        data-id="{{ $activite->id }}"
+                                                        data-nom="{{ $activite->nom_activite }}"
+                                                        data-debut="{{ $activite->date_debut_formatted }}"
+                                                        data-prevue="{{ $activite->date_prevue_formatted }}"
+                                                        data-fin="{{ $activite->date_fin_formatted }}"
+                                                        data-statut="{{ $activite->statut_activite }}"
+                                                        data-lieu="{{ $activite->lieu_reunion }}"
+                                                        data-heure="{{ $activite->heure_reunion }}"
+                                                        data-description="{{ $activite->description_reunion }}">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </button>
+                                                @endif
 
-                                                <button class="btn btn-sm btn-outline-danger delete-activity-btn mr-2"
-                                                    data-activite-id="{{ $activite->id }}">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
+                                                @if (auth()->user()->role === 'admin' || auth()->user()->role === 'commentateur')
+                                                    <button
+                                                        class="btn btn-sm btn-outline-danger delete-activity-btn mr-2"
+                                                        data-activite-id="{{ $activite->id }}">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                @endif
+
+
 
                                                 <form action="{{ route('activites.googlecalendar', $activite->id) }}"
                                                     method="POST" style="display:inline;">
                                                     @csrf
-                                                    <button type="submit" class="btn btn-sm btn-outline-success">
-                                                        <i class="bi bi-calendar-plus"></i> Agenda
-                                                    </button>
+                                                    @if (auth()->user()->role === 'admin' || auth()->user()->role === 'commentateur')
+                                                        <button type="submit" class="btn btn-sm btn-outline-success">
+                                                            <i class="bi bi-calendar-plus"></i> Agenda
+                                                        </button>
+                                                    @endif
                                                 </form>
                                             </div>
                                         </div>

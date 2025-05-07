@@ -9,8 +9,8 @@ use Smalot\PdfParser\Parser;
 
 class GeminiController extends Controller
 {
-    private $apiKey = 'à changer avec la clé api';
-    private $model = 'models/gemini-1.5-pro'; // modèle valide
+    private $apiKey = 'AIzaSyDiaTtfRUMp1Du_fWlO50jU6JMT-x0ZC0o';
+    private $model = 'models/gemini-1.5-pro';
 
     private function callGemini($prompt)
     {
@@ -32,7 +32,7 @@ class GeminiController extends Controller
     public function synthese()
     {
 
-        set_time_limit(300); // 300 secondes = 5 minutes
+        set_time_limit(350); // 300 secondes = 5 minutes
 
         $dataController = new GeminiDataController();
         $data = $dataController->collectData()->getData();
@@ -57,7 +57,7 @@ class GeminiController extends Controller
     public function question(Request $request)
     {
 
-        set_time_limit(300); // 300 secondes = 5 minutes
+        set_time_limit(350); // 300 secondes = 5 minutes
 
         $dataController = new GeminiDataController();
         $data = $dataController->collectData()->getData();

@@ -14,9 +14,12 @@
     <div class="card">
         <div class="card-body">
             <div class="d-flex no-block mb-3">
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addPartiePrenanteModal">
-                    <i class="fa fa-plus mr-2"></i> Insérer une Partie Prenante
-                </button>
+                @if (auth()->user()->role === 'admin' || auth()->user()->role === 'commentateur')
+                    <button type="button" class="btn btn-primary" data-toggle="modal"
+                        data-target="#addPartiePrenanteModal">
+                        <i class="fa fa-plus mr-2"></i> Insérer une Partie Prenante
+                    </button>
+                @endif
             </div>
             @include('partiePrenante.ajoutPartiePrenante')
 
@@ -113,19 +116,23 @@
                                         <div class="d-flex justify-content-around flex-wrap">
 
                                             {{-- Bouton de modification --}}
-                                            <button type="button" class="btn btn-warning btn-sm m-1 w-80"
-                                                data-toggle="modal" data-target="#editModal-{{ $entry->id }}">
-                                                <i class="fa fa-edit"></i>
-                                            </button>
+                                            @if (auth()->user()->role === 'admin' || auth()->user()->role === 'commentateur')
+                                                <button type="button" class="btn btn-warning btn-sm m-1 w-80"
+                                                    data-toggle="modal" data-target="#editModal-{{ $entry->id }}">
+                                                    <i class="fa fa-edit"></i>
+                                                </button>
+                                            @endif
 
                                             {{-- Bouton de suppression --}}
                                             <form method="POST" action="{{ route('partieprenante.destroy', $entry->id) }}"
                                                 class="d-inline m-1 w-100">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="button" class="btn btn-danger btn-sm delete-btn  w-90">
-                                                    <i class="fa fa-trash"></i>
-                                                </button>
+                                                @if (auth()->user()->role === 'admin' || auth()->user()->role === 'commentateur')
+                                                    <button type="button" class="btn btn-danger btn-sm delete-btn  w-90">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                @endif
                                             </form>
 
                                         </div>

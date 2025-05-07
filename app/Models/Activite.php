@@ -109,6 +109,13 @@ class Activite extends Model
 
         static::updated(function ($activite) {
             $activite->jalon->updateJalonProgress();
+            // $activite->load('jalon');
+            // if ($activite->jalon) {
+            //     $activite->jalon->updateJalonProgress();
+            //     // Mettre à jour le projet associé
+            //     $projet = $activite->jalon->projet;
+            //     $projet->updateSituations();
+            // }
         });
     }
 

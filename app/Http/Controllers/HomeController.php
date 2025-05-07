@@ -54,19 +54,34 @@ class HomeController extends Controller
 
         // Activités par statut
         // Total activités
-        $totalActivites = Activite::count();
+        $projetId = $request->input('projet_id');
+
+        $query = Activite::query();
+
+        if ($projetId) {
+            $query->whereHas('jalon.projet', function ($q) use ($projetId) {
+                $q->where('id', $projetId);
+            });
+        }
+
+        $totalActivites = $query->count();
 
         $pourcentageEnCours = $totalActivites > 0
-            ? round((Activite::where('statut_activite', 'En cours')->count() / $totalActivites) * 100)
+            ? round($query->clone()->where('statut_activite', 'En cours')->count() / $totalActivites * 100)
             : 0;
 
         $pourcentageEnRetard = $totalActivites > 0
-            ? round((Activite::where('statut_activite', 'En retard')->count() / $totalActivites) * 100)
+            ? round($query->clone()->where('statut_activite', 'En retard')->count() / $totalActivites * 100)
             : 0;
 
         $pourcentageAchevees = $totalActivites > 0
-            ? round((Activite::where('statut_activite', 'Achevé')->count() / $totalActivites) * 100)
+            ? round($query->clone()->where('statut_activite', 'Achevé')->count() / $totalActivites * 100)
             : 0;
+
+        $projets = Projet::all(); // pour la liste déroulante
+
+
+
 
         $listeProjets = Projet::all();
 
@@ -124,6 +139,8 @@ class HomeController extends Controller
             'pourcentageEnCours',
             'pourcentageEnRetard',
             'pourcentageAchevees',
+            'projets',
+            'projetId',
             'listeProjets',
             'listeActivitesSemaine',
             'listeProjetsRisques',

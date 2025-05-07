@@ -59,6 +59,9 @@ class partiePrenanteController extends Controller
 
     public function store(Request $request)
     {
+        if (!in_array(auth()->user()->role, ['admin', 'commentateur'])) {
+            abort(403, 'Accès non autorisé.');
+        }
         // Vérifier si l'entité existe déjà
         $partiePrenante = PartiePrenante::firstOrCreate(['entite' => $request->entite]);
 
@@ -81,6 +84,9 @@ class partiePrenanteController extends Controller
     // Affiche le formulaire de modification
     public function edit($partiePrenanteId)
     {
+        if (!in_array(auth()->user()->role, ['admin', 'commentateur'])) {
+            abort(403, 'Accès non autorisé.');
+        }
         // Récupère la partie prenante
         $partiePrenante = PartiePrenante::findOrFail($partiePrenanteId);
 
@@ -103,6 +109,10 @@ class partiePrenanteController extends Controller
     // Méthode pour mettre à jour la partie prenante
     public function update(Request $request, $id)
     {
+        if (!in_array(auth()->user()->role, ['admin', 'commentateur'])) {
+            abort(403, 'Accès non autorisé.');
+        }
+
         $pivotEntry = ProjetPartiePrenante::findOrFail($id);
         $pivotEntry->update([
             'fonction' => $request->fonction,

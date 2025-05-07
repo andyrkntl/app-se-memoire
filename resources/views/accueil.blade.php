@@ -12,7 +12,7 @@
                 <li class="breadcrumb-item active">Accueil</li>
             </ol>
         </div>
-        <div class="col-md-6 col-4 align-self-center">
+        {{-- <div class="col-md-6 col-4 align-self-center">
             <div class="d-flex justify-content-end">
                 <a href="#" class="btn btn-info d-none d-lg-block m-l-15">
                     <i class="fa fa-plus-circle"></i> Nouvelle Activité
@@ -21,7 +21,7 @@
                     <i class="fa fa-plus-circle"></i> Formulaire de suivi
                 </a>
             </div>
-        </div>
+        </div> --}}
     </div>
     @include('dashboard.cardDashboard')
 

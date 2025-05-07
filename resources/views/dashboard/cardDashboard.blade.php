@@ -80,6 +80,27 @@
         </div>
 
         <!-- Carte des Activités -->
+        <!-- Filtre par projet -->
+        <form method="GET" action="{{ route('home') }}" class="mb-3">
+            <div class="form-row align-items-center">
+                <div class="col-auto">
+                    <label class="sr-only" for="projet_id">Projet</label>
+                    <select name="projet_id" id="projet_id" class="form-control">
+                        <option value="">Tous les projets</option>
+                        @foreach ($projets as $projet)
+                            <option value="{{ $projet->id }}"
+                                {{ isset($projetId) && $projetId == $projet->id ? 'selected' : '' }}>
+                                {{ $projet->nom_projet }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">Filtrer</button>
+                </div>
+            </div>
+        </form>
+
         <div class="row mt-4">
             <div class="col-12">
                 <div class="card activities-card">

@@ -118,11 +118,14 @@
                                                     class="btn btn-outline-primary btn-sm flex-grow-1 flex-md-grow-0">
                                                     <i class="bi bi-download mr-1"></i> Télécharger
                                                 </a>
-                                                {{-- bouton modifier --}}
-                                                <button type="button" class="btn btn-outline-warning btn-sm ml-2"
-                                                    data-toggle="modal" data-target="#editModal{{ $document->id }}">
-                                                    <i class="fa fa-edit"></i>
-                                                </button>
+
+                                                @if (auth()->user()->role === 'admin' || auth()->user()->role === 'commentateur')
+                                                    {{-- bouton modifier --}}
+                                                    <button type="button" class="btn btn-outline-warning btn-sm ml-2"
+                                                        data-toggle="modal" data-target="#editModal{{ $document->id }}">
+                                                        <i class="fa fa-edit"></i>
+                                                    </button>
+                                                @endif
 
                                                 {{-- bouton supprimer --}}
                                                 <form method="POST"
@@ -130,10 +133,12 @@
                                                     class="d-inline ml-2" id="deleteForm{{ $document->id }}">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="button" class="btn btn-outline-danger btn-sm"
-                                                        onclick="confirmDelete({{ $document->id }})">
-                                                        <i class="fa fa-trash"></i>
-                                                    </button>
+                                                    @if (auth()->user()->role === 'admin' || auth()->user()->role === 'commentateur')
+                                                        <button type="button" class="btn btn-outline-danger btn-sm"
+                                                            onclick="confirmDelete({{ $document->id }})">
+                                                            <i class="fa fa-trash"></i>
+                                                        </button>
+                                                    @endif
                                                 </form>
                                             </div>
                                         </td>

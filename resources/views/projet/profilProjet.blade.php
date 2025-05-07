@@ -101,9 +101,11 @@
 
             <!-- Colonne pour ajouter des documents -->
             <div class="col-md-4 mt-5">
-                <button type="button" class="btn btn-primary mb-2" data-toggle="modal" data-target="#addDocumentModal">
-                    <i class="bi bi-plus-circle"></i> Ajouter un document
-                </button>
+                @if (auth()->user()->role === 'admin' || auth()->user()->role === 'commentateur')
+                    <button type="button" class="btn btn-primary mb-2" data-toggle="modal" data-target="#addDocumentModal">
+                        <i class="bi bi-plus-circle"></i> Ajouter un document
+                    </button>
+                @endif
 
 
                 <a href="{{ route('document.index', $projet->id) }}" class="btn btn-outline-secondary mb-2">

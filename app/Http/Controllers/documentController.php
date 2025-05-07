@@ -42,6 +42,9 @@ class DocumentController extends Controller
     //Ajout d'un document
     public function store(Request $request)
     {
+        if (!in_array(auth()->user()->role, ['admin', 'commentateur'])) {
+            abort(403, 'Accès non autorisé.');
+        }
         // Validation des champs
         $validated = $request->validate([
             'nom_docs' => 'required|string|max:255',
@@ -67,6 +70,10 @@ class DocumentController extends Controller
     //modification document
     public function update(Request $request, Document $document)
     {
+        if (!in_array(auth()->user()->role, ['admin', 'commentateur'])) {
+            abort(403, 'Accès non autorisé.');
+        }
+
         $validated = $request->validate([
             'nom_docs' => 'required|string|max:255',
             'type_docs' => 'required|in:rapport,fiche de présence,livrable,compte rendu,manuel,autres'
@@ -81,6 +88,9 @@ class DocumentController extends Controller
     //suppression document
     public function destroy(Document $document)
     {
+        if (!in_array(auth()->user()->role, ['admin', 'commentateur'])) {
+            abort(403, 'Accès non autorisé.');
+        }
         Storage::delete($document->file_path);
         $document->delete();
 

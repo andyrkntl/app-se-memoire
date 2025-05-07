@@ -13,6 +13,10 @@ class ActiviteController extends Controller
 {
     public function store(Request $request)
     {
+        if (!in_array(auth()->user()->role, ['admin', 'commentateur'])) {
+            abort(403, 'Accès non autorisé.');
+        }
+
         $validated = $request->validate([
             'jalon_id' => 'required|exists:jalons,id',
             'nom_activite' => 'required|string|max:255',
@@ -61,6 +65,10 @@ class ActiviteController extends Controller
      */
     public function edit(Activite $activite)
     {
+        if (!in_array(auth()->user()->role, ['admin', 'commentateur'])) {
+            abort(403, 'Accès non autorisé.');
+        }
+
         $jalons = Jalon::all();
         return view('activites.edit', compact('activite', 'jalons'));
     }
@@ -70,7 +78,9 @@ class ActiviteController extends Controller
      */
     public function update(Request $request, Activite $activite)
     {
-
+        if (!in_array(auth()->user()->role, ['admin', 'commentateur'])) {
+            abort(403, 'Accès non autorisé.');
+        }
 
         $validated = $request->validate([
             'nom_activite' => 'required|string|max:255',
@@ -111,6 +121,10 @@ class ActiviteController extends Controller
      */
     public function destroy($id)
     {
+        if (!in_array(auth()->user()->role, ['admin', 'commentateur'])) {
+            abort(403, 'Accès non autorisé.');
+        }
+
         $activite = Activite::find($id);
 
         if (!$activite) {

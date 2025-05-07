@@ -18,6 +18,10 @@ class ProjetController extends Controller
     {
         $query = Projet::with('chantier', 'lead');
 
+        // Filtrer par nom du projet (recherche partielle)
+        if ($request->filled('nom_projet')) {
+            $query->where('nom_projet', 'like', '%' . $request->nom_projet . '%');
+        }
 
         // Filtrer par chantier
         if ($request->filled('chantier_id')) {
@@ -49,6 +53,10 @@ class ProjetController extends Controller
      */
     public function store(Request $request)
     {
+        if (!in_array(auth()->user()->role, ['admin', 'commentateur'])) {
+            abort(403, 'Accès non autorisé.');
+        }
+
         $validated = $request->validate([
             'chantier_id' => 'required|integer|exists:chantiers,id',
             'lead_id' => 'required|integer|exists:leads,id',
@@ -85,6 +93,14 @@ class ProjetController extends Controller
      */
     public function update(Request $request, Projet $projet)
     {
+        if (!in_array(auth()->user()->role, ['admin', 'commentateur'])) {
+            abort(403, 'Accès non autorisé.');
+        }
+
+        if (!in_array(auth()->user()->role, ['admin', 'commentateur'])) {
+            abort(403, 'Accès non autorisé.');
+        }
+
         $validated = $request->validate([
             'chantier_id' => 'required|integer|exists:chantiers,id',
             'lead_id' => 'required|integer|exists:leads,id',
@@ -105,6 +121,10 @@ class ProjetController extends Controller
      */
     public function destroy($id)
     {
+        if (!in_array(auth()->user()->role, ['admin', 'commentateur'])) {
+            abort(403, 'Accès non autorisé.');
+        }
+
         $projet = Projet::findOrFail($id);
         $projet->delete();
 

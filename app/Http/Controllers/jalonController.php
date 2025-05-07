@@ -13,6 +13,10 @@ class jalonController extends Controller
      */
     public function store(Request $request, Projet $projet)
     {
+        if (!in_array(auth()->user()->role, ['admin', 'commentateur'])) {
+            abort(403, 'Accès non autorisé.');
+        }
+
         $validated = $request->validate([
             'projet_id' => 'required|exists:projets,id',
             'nom_jalon' => 'required|string|max:255',
@@ -31,6 +35,9 @@ class jalonController extends Controller
      */
     public function update(Request $request, Jalon $jalon)
     {
+        if (!in_array(auth()->user()->role, ['admin', 'commentateur'])) {
+            abort(403, 'Accès non autorisé.');
+        }
         $validated = $request->validate([
             'nom_jalon' => 'required|string|max:255',
             'description' => 'nullable|string'
@@ -47,6 +54,9 @@ class jalonController extends Controller
      */
     public function destroy($id)
     {
+        if (!in_array(auth()->user()->role, ['admin', 'commentateur'])) {
+            abort(403, 'Accès non autorisé.');
+        }
         // Trouver le jalon par son ID
         $jalon = Jalon::find($id);
 

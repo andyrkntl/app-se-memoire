@@ -20,7 +20,7 @@
              <div class="form-row">
                  <div class="col-md-4 mb-3">
                      <input type="text" name="lieu_reunion" class="form-control form-control-sm"
-                         placeholder="Lieu de la réunion">
+                         placeholder="Résultats, ...">
                  </div>
                  <div class="col-md-3 mb-3">
                      <input type="time" name="heure_reunion" class="form-control form-control-sm"
@@ -28,7 +28,7 @@
                  </div>
                  <div class="col-md-5 mb-3">
                      <input type="text" name="description_reunion" class="form-control form-control-sm"
-                         placeholder="Description">
+                         placeholder="Description- Responsable,...">
                  </div>
              </div>
 

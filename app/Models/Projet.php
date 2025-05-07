@@ -136,7 +136,7 @@ class Projet extends Model
         // Récupérer les 3 dernières activités passées ou en cours
         $situation_actuelle = $this->activite()
             ->where('activites.date_debut', '<=', $today)
-            ->whereIn('activites.statut_activite', ['en cours', 'achevé'])
+            ->whereIn('activites.statut_activite', ['en cours', 'en retard'])
             ->orderBy('activites.date_debut', 'desc')
             ->limit(3)
             ->pluck('nom_activite')
