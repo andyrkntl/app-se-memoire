@@ -9,7 +9,7 @@ class GestionUtilisateurController extends Controller
 {
     public function index(Request $request)
     {
-        $utilisateurs = User::select('id', 'name', 'email', 'role')->get(); // ← ajout 'id'
+        $utilisateurs = User::select('id', 'name', 'email', 'role')->paginate(1); // ← ajout 'id'
         return view('administrateur.indexUtilisateur', compact('utilisateurs'));
     }
 

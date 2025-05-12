@@ -172,6 +172,10 @@
                     </div>
                 @endforeach
             </div>
+            <!-- Pagination -->
+            <div class="d-flex justify-content-center mt-4">
+                {{ $projets->links('pagination::bootstrap-4') }}
+            </div>
         </div>
     </div>
     @include('projet.modifierProjet')

@@ -155,7 +155,7 @@
 
                 <!-- Pagination -->
                 <div class="d-flex justify-content-center mt-4">
-                    {{ $pivotEntries->withQueryString()->links() }}
+                    {{ $pivotEntries->links('pagination::bootstrap-4') }}
                 </div>
             </div>
         </div>

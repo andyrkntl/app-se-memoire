@@ -38,7 +38,8 @@ class ProjetController extends Controller
             $query->where('statut_projet', $request->statut_projet);
         }
 
-        $projets = $query->get();
+        // Ajouter la pagination (10 éléments par page)
+        $projets = $query->paginate(7);
 
         // Récupérer les valeurs possibles pour les filtres
         $chantiers = Chantier::all();

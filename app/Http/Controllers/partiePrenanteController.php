@@ -35,7 +35,7 @@ class partiePrenanteController extends Controller
         }
 
         // Pagination
-        $pivotEntries = $query->paginate(15);
+        $pivotEntries = $query->paginate(3);
 
         // Données pour les filtres
         $entites = PartiePrenante::distinct()->pluck('entite');
