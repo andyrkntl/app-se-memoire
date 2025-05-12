@@ -40,9 +40,17 @@
 
                             <div class="col-12 mb-3">
                                 <label for="password" class="form-label">Mot de passe</label>
-                                <input type="password" name="password"
-                                    class="form-control form-control-line  @error('password') is-invalid @enderror"
-                                    id="password" required>
+                                <div class="input-group">
+                                    <input type="password" name="password"
+                                        class="form-control form-control-line @error('password') is-invalid @enderror"
+                                        id="password" required>
+                                    <div class="input-group-append">
+                                        <span class="input-group-text bg-white border-0" id="togglePassword"
+                                            style="cursor: pointer;">
+                                            <i class="fa fa-eye"></i>
+                                        </span>
+                                    </div>
+                                </div>
                                 @error('password')
                                     <div class="invalid-feedback mt-2">{{ $message }}</div>
                                 @enderror
@@ -75,4 +83,22 @@
             </section>
         </div>
     </main>
+
+
+
+    <script>
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordField = document.getElementById('password');
+            const icon = this.querySelector('i');
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+    </script>
 @endsection

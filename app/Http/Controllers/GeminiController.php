@@ -10,10 +10,8 @@ use Smalot\PdfParser\Parser;
 
 class GeminiController extends Controller
 {
-    private $apiKey = 'AIzaSyDiaTtfRUMp1Du_fWlO50jU6JMT-x0ZC0o';
+    private $apiKey = 'AIzaSyDLQHOvyXSmg87z3u7PtCLvVwBHIRSOj_U';
     private $model = 'models/gemini-1.5-pro';
-
-
 
     private function callGemini($prompt)
     {
@@ -66,6 +64,7 @@ class GeminiController extends Controller
             return 'Erreur : Une exception s\'est produite lors de l\'appel à Gemini.';
         }
     }
+
     public function synthese()
     {
 
@@ -84,7 +83,17 @@ class GeminiController extends Controller
         $prompt .= "\n\nVoici également un extrait du plan stratégique PREA à utiliser comme référence :\n\n";
         $prompt .= substr($pdfText, 0, 50000); // On limite à 5000 caractères pour éviter que Gemini dépasse
 
-        $prompt .= "\n\nPeux-tu me faire une synthèse intelligente (comme un rapport d'activités de tous les chantiers de réforme de PREA) qui combine les données de projet et les orientations du plan stratégique PREA ?";
+        $prompt .= "\n\nAgis en tant qu'assistant expert en analyse de données et en reporting stratégique. Sur la base des données d'activité de l'application de suivi et d'évaluation des chantiers de reforme de l'administration malagasy et du document PDF contenant le plan stratégique de PREA, génère un rapport d'activités intelligent pour les chantiers de réforme de PREA.
+
+                        Ce rapport doit :
+
+                        1.  **Synthétiser les principales réalisations et l'avancement** de chaque chantier de réforme, en utilisant les données de l'application.
+                        2.  **Évaluer la contribution de chaque chantier** aux objectifs et orientations stratégiques définis dans le plan stratégique. Indique clairement comment les activités menées s'alignent ou contribuent à la réalisation des priorités stratégiques.
+                        3.  **Identifier les points saillants, les succès et les défis** rencontrés pour chaque chantier, en te basant sur les données disponibles.
+                        4.  **Fournir une vue d'ensemble synthétique** de l'avancement global des réformes par rapport au plan stratégique.
+                        5.  ** Suggérer des recommandations** ou des points d'attention pour les prochaines étapes, en tenant compte des données et du plan stratégique, soyez direct et donner des solutions concrètes et palpables.
+
+                        Assure-toi que le rapport est clair, concis et met en évidence les liens entre les activités opérationnelles et les objectifs stratégiques de PREA.";
 
         $synthese = $this->callGemini($prompt);
 

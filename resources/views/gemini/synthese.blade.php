@@ -11,12 +11,16 @@
 
         <div class="card mb-4">
             <div class="card-body">
-                {!! nl2br(e($synthese)) !!}
+                @php
+                    $parsedown = new \Parsedown();
+                    echo $parsedown->text($synthese);
+                @endphp
+
             </div>
         </div>
 
 
-        {{-- Bouton d’export Word --}}
+        {{-- Bouton d’export pdf --}}
         <form action="{{ route('export.pdf') }}" method="POST">
             @csrf
             <input type="hidden" name="synthese" value="{{ $synthese ?? '' }}">
