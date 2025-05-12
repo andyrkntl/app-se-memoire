@@ -79,7 +79,7 @@ class GeminiDataController extends Controller
 
                 //  Jalons et Activités
                 foreach ($projet->jalon as $jalon) {
-                    $rapport .= "    🔹 Jalon : {$jalon->nom_jalon}\n";
+                    $rapport .= "     Jalon : {$jalon->nom_jalon}\n";
                     $rapport .= "       - Taux d'avancement : {$jalon->taux_avancement}%\n";
                     $rapport .= "       - Début : {$jalon->date_debut}\n";
                     $rapport .= "       - Fin prévue : {$jalon->date_prevue}\n";
@@ -95,9 +95,9 @@ class GeminiDataController extends Controller
 
                         // Détails de réunion s'il y en a
                         if ($activite->lieu_reunion || $activite->heure_reunion || $activite->description_reunion) {
-                            $rapport .= "          - Réunion :\n";
+                            $rapport .= "          - Activité :\n";
                             if ($activite->lieu_reunion) {
-                                $rapport .= "              • Lieu : {$activite->lieu_reunion}\n";
+                                $rapport .= "              • NB : {$activite->lieu_reunion}\n";
                             }
                             if ($activite->heure_reunion) {
                                 $rapport .= "              • Heure : {$activite->heure_reunion}\n";

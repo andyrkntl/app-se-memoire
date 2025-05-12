@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\GeminiDataController;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Smalot\PdfParser\Parser;
 
 class GeminiController extends Controller
@@ -12,23 +13,59 @@ class GeminiController extends Controller
     private $apiKey = 'AIzaSyDiaTtfRUMp1Du_fWlO50jU6JMT-x0ZC0o';
     private $model = 'models/gemini-1.5-pro';
 
+
+
     private function callGemini($prompt)
     {
-        $response = Http::withOptions([
-            'verify' => storage_path('cacert.pem'),
-        ])->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key={$this->apiKey}", [
-            'contents' => [
-                [
-                    'parts' => [
-                        ['text' => $prompt]
+        try {
+            $response = Http::withOptions([
+                'verify' => storage_path('cacert.pem'),
+            ])->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={$this->apiKey}", [
+                'contents' => [
+                    [
+                        'parts' => [
+                            ['text' => $prompt]
+                        ]
                     ]
                 ]
-            ]
-        ]);
+            ]);
 
-        return $response->json()['candidates'][0]['content']['parts'][0]['text'] ?? ' Erreur de réponse Gemini';
+            // Log de la requête et de la réponse pour débogage
+            Log::info('Requête envoyée à Gemini : ', [
+                'url' => "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
+                'payload' => [
+                    'contents' => [
+                        [
+                            'parts' => [
+                                ['text' => $prompt]
+                            ]
+                        ]
+                    ]
+                ]
+            ]);
+            Log::info('Réponse de Gemini : ', [
+                'status' => $response->status(),
+                'body' => $response->body()
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+
+                if (isset($data['candidates'][0]['content']['parts'][0]['text'])) {
+                    return $data['candidates'][0]['content']['parts'][0]['text'];
+                } else {
+                    Log::error('Réponse inattendue de Gemini : ' . json_encode($data));
+                    return 'Erreur : Réponse inattendue de Gemini.';
+                }
+            } else {
+                Log::error('Erreur HTTP Gemini : ' . $response->status() . ' - ' . $response->body());
+                return 'Erreur : Problème de communication avec l\'API Gemini.';
+            }
+        } catch (\Exception $e) {
+            Log::error('Exception lors de l\'appel à Gemini : ' . $e->getMessage());
+            return 'Erreur : Une exception s\'est produite lors de l\'appel à Gemini.';
+        }
     }
-
     public function synthese()
     {
 

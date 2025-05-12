@@ -11,7 +11,7 @@ use App\Http\Controllers\GoogleCalendarController;
 use App\Http\Controllers\GeminiController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\Auth\LoginController;
-
+use App\Http\Controllers\GestionUtilisateurController;
 
 Auth::routes();
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index', 'evolutionTauxExecution'])->name('home');
@@ -67,4 +67,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/gemini-synthese', [GeminiController::class, 'synthese'])->name('gemini.synthese');
     Route::post('/gemini-question', [GeminiController::class, 'question']);
     Route::post('/export-word', [ExportController::class, 'exportPdf'])->name('export.pdf');
+
+
+
+
+    Route::get('/utilisateurs', [GestionUtilisateurController::class, 'index'])->name('utilisateur.index');
+    Route::put('/utilisateur/{utilisateur}', [GestionUtilisateurController::class, 'update'])->name('utilisateur.update');
+    Route::delete('/utilisateur/{utilisateur}', [GestionUtilisateurController::class, 'destroy'])->name('utilisateur.destroy');
 });

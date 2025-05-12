@@ -3,7 +3,7 @@
 
 @section('content')
     <div class="container">
-        <h2 class="mb-4">🧠 Synthèse par Gemini</h2>
+        <h2 class="mb-4">Rapport d'activités</h2>
 
         @if (isset($question))
             <p><strong>💬 Question posée :</strong> {{ $question }}</p>

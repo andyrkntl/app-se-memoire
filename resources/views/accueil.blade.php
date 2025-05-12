@@ -38,7 +38,7 @@
                 <div class="card-header bg-info">
                     <h4 class="text-white">Dernières Actualités</h4>
                 </div>
-                <div class="card-body ">
+                <div class="card-body">
 
                     @if (isset($dernieresActualites) && count($dernieresActualites) > 0)
                         <ul class="list-group">

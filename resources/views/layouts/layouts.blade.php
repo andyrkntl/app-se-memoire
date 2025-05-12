@@ -165,8 +165,8 @@
                             </a>
                         </li>
                         <li>
-                            @if (auth()->user()->role === 'admin' || auth()->user()->role === 'commentateur')
-                                <a class="waves-effect waves-dark" href="#">
+                            @if (auth()->user()->role === 'admin')
+                                <a class="waves-effect waves-dark" href="{{ route('utilisateur.index') }}">
                                     <i class="fa-sharp-duotone fa-solid fa-user-tie"></i>
                                     <span class="preview">Administrateur</span>
                                 </a>
