@@ -94,14 +94,12 @@ class GeminiDataController extends Controller
                         $rapport .= "          - Statut : {$activite->statut_activite}\n";
 
                         // Détails de réunion s'il y en a
-                        if ($activite->lieu_reunion || $activite->heure_reunion || $activite->description_reunion) {
+                        if ($activite->lieu_reunion  || $activite->description_reunion) {
                             $rapport .= "          - Activité :\n";
                             if ($activite->lieu_reunion) {
                                 $rapport .= "              • NB : {$activite->lieu_reunion}\n";
                             }
-                            if ($activite->heure_reunion) {
-                                $rapport .= "              • Heure : {$activite->heure_reunion}\n";
-                            }
+
                             if ($activite->description_reunion) {
                                 $rapport .= "              • Description : {$activite->description_reunion}\n";
                             }

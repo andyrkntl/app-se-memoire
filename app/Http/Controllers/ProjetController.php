@@ -81,6 +81,8 @@ class ProjetController extends Controller
         // Récupération du projet avec ses relations
         $projet = Projet::with(['lead', 'chantier', 'jalon.activite'])->find($id);
 
+        // Mettre à jour les situations pour ce projet
+        $projet->updateSituations();
         if ($projet) {
             return view('projet.profilProjet', compact('projet'));
         } else {

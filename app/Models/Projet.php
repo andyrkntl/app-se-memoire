@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class Projet extends Model
 {
@@ -131,6 +132,7 @@ class Projet extends Model
 
     public function updateSituations()
     {
+        Log::info("Mise à jour des situations pour le projet : {$this->id}");
         $today = Carbon::today();
 
         // Récupérer les 3 dernières activités passées ou en cours

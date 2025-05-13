@@ -37,13 +37,11 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/jalons/{id}', [JalonController::class, 'destroy'])->name('jalon.destroy');
 
 
-
     Route::post('/activites', [ActiviteController::class, 'store'])->name('activite.store');
     Route::get('/activites/{activite}/edit', [ActiviteController::class, 'edit'])->name('activite.edit');
     Route::put('/activites/{activite}', [ActiviteController::class, 'update'])->name('activite.update');
     Route::delete('/activites/{activite}', [ActiviteController::class, 'destroy'])->name('activite.destroy');
     Route::get('/projet/{id}/activites/filter', [ActiviteController::class, 'filter'])->name('activite.filter');
-
 
 
     Route::post('/documents', [DocumentController::class, 'store'])->name('document.store');
@@ -52,26 +50,21 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/documents/{document}', [DocumentController::class, 'destroy'])->name('document.destroy');
 
 
-
-
-    Route::get('/agenda', function () {
-        return view('agenda.googleAgenda');
-    });
-
-    Route::get('/google/redirect', [GoogleCalendarController::class, 'redirectToGoogle'])->name('google.redirect');
-    Route::get('/google/callback', [GoogleCalendarController::class, 'handleGoogleCallback']);
-    Route::get('/google/events', [GoogleCalendarController::class, 'listEvents'])->name('agenda.events');
-    Route::post('/activites/{id}/add-to-google-calendar', [GoogleCalendarController::class, 'addToGoogleCalendar'])->name('activites.googlecalendar');
-
-
     Route::get('/gemini-synthese', [GeminiController::class, 'synthese'])->name('gemini.synthese');
     Route::post('/gemini-question', [GeminiController::class, 'question']);
     Route::post('/export-word', [ExportController::class, 'exportPdf'])->name('export.pdf');
-
-
 
 
     Route::get('/utilisateurs', [GestionUtilisateurController::class, 'index'])->name('utilisateur.index');
     Route::put('/utilisateur/{utilisateur}', [GestionUtilisateurController::class, 'update'])->name('utilisateur.update');
     Route::delete('/utilisateur/{utilisateur}', [GestionUtilisateurController::class, 'destroy'])->name('utilisateur.destroy');
 });
+
+Route::get('/agenda', function () {
+    return view('agenda.googleAgenda');
+});
+
+Route::get('/google/redirect', [GoogleCalendarController::class, 'redirectToGoogle'])->name('google.redirect');
+Route::get('/google/callback', [GoogleCalendarController::class, 'handleGoogleCallback']);
+Route::get('/google/events', [GoogleCalendarController::class, 'listEvents'])->name('agenda.events');
+Route::post('/activites/{id}/add-to-google-calendar', [GoogleCalendarController::class, 'addToGoogleCalendar'])->name('activites.googlecalendar');
